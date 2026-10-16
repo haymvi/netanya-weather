@@ -1,193 +1,109 @@
-# Netanya Weather — da página de clima ao chaveiro QR
+# Netanya Weather — como construir a página e imprimir o chaveiro QR em duas cores
 
-**Estado: desenvolvimento e teste físico em andamento.** A impressão relatada
-pelo usuário saiu inteiramente branca. Os comandos de troca presentes nos
-arquivos não comprovaram ativação do IFS. Nenhum G-code desta documentação deve
-ser tratado como versão multicolorida final validada.
+> **Procedimento de impressão bicolor confirmado fisicamente na Flashforge AD5X.**
+> Etapa indispensável: após selecionar o G-code na impressora, **ativar Enable IFS** antes de iniciar.
 
-## Fontes e autoria
+**Guia ilustrado, responsivo, em hebraico e inglês:** [How it was made](howto.html)  
+**Página meteorológica:** https://haymvi.github.io/netanya-weather/  
+**Repositório:** https://github.com/haymvi/netanya-weather
 
-- [Histórico do ChatGPT fornecido pelo usuário](docs/chat-history.md): decisões
-  e implementação anteriores; algumas pendências foram superadas depois.
-- [Registro técnico completo do Codex](docs/CODEX-HISTORICO.md): ferramentas,
-  resultados, erros, revisões e pendências desta sessão.
-- [Guia público em hebraico e inglês](howto.html).
-- [Instruções técnicas de reprodução do fatiamento](fabrication/README.md).
+## 1. Objetivo
 
-O usuário confirmou que o ChatGPT criou o modelo original em outra conversa.
-O Codex recebeu esse modelo, fez inspeção, fatiamento e revisões posteriores.
-As etapas antigas não foram reexecutadas só por estarem descritas no histórico.
+Criar um dashboard meteorológico fixo para Netanya (Israel), hospedado gratuitamente no GitHub Pages, acessível pelo QR Code em relevo de um chaveiro impresso em PLA branco e preto. O QR codifica uma URL permanente; atualizar a página não exige imprimir outro chaveiro.
 
-## 1. Criar a página meteorológica
+## 2. Construir a página HTML
 
-A arquitetura é navegador → arquivos estáticos GitHub Pages → APIs Open-Meteo →
-JSON → cartões e gráficos. Não há backend, conta de usuário ou chave API no
-código atual. O dashboard permanece em `index.html`; a documentação não o substitui. A revisão
-esportiva também carrega `sports.js` e `sports.css`; publique esses arquivos junto
-com o HTML. Não há framework ou instalação de pacotes para executar o site.
+A arquitetura é **GitHub Pages → HTML/CSS/JavaScript no navegador → APIs Open-Meteo → JSON → cartões e gráficos**. Não é necessário servidor próprio, instalação de pacotes ou chave API para a modalidade gratuita não comercial.
 
-O outro chat relata uma primeira versão em português e depois a versão HE/EN.
-O checkout inspecionado contém a versão HE/EN; a cópia portuguesa e o ZIP antigo
-citados naquele histórico não foram fornecidos nesta etapa.
+Arquivos publicados juntos na raiz:
 
-Para reproduzir as funcionalidades originais, implemente no HTML:
+- `index.html` — página inicial e clima geral.
+- `sports.js` — surf, windsurf, kitesurf e apresentação das fontes.
+- `sports.css` — estilos das seções esportivas.
+- `howto.html` — este manual em hebraico e inglês.
 
-1. Localização fixa 32.3215,34.8532, timezone Asia/Jerusalem.
-2. Cartões atuais, SVG de temperatura/chuva com seleção 12/24h e cinco dias.
-3. Consulta forecast com os conjuntos current/hourly/daily e consulta marine
-   separada. Os parâmetros exatos auditados estão no registro do Codex, seção 3.
-4. Estados de carregamento/erro, timeout de 14 s, atualização a cada 900.000 ms
-   e trava para evitar requisições simultâneas duplicadas.
-5. Hebraico padrão RTL, inglês LTR, preferência localStorage e query `?lang=`.
-6. Tradução dos textos, descrições do tempo, gráficos e rótulos acessíveis.
-7. Créditos Open-Meteo e explicação de que se trata de previsão de modelo.
+Referências geográficas: **32.3215°N, 34.8532°E** para o tempo terrestre e **32.33°N, 34.80°E** para um ponto de modelo marítimo offshore. Fuso horário **Asia/Jerusalem**. Atualização periódica: 15 minutos.
 
-A API deve ser testada de verdade. Testar com fixtures ou bloquear a rede para
-ensaiar erros não comprova atualização real. As condições marítimas não devem
-ser usadas como autorização de segurança para banho ou navegação.
+As APIs utilizadas são:
 
-### Revisão com foco em surf, windsurf e kitesurf
+- Meteorologia: [Open-Meteo Forecast](https://open-meteo.com/en/docs).
+- Mar, ondas, swell e temperatura superficial prevista: [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api).
+- Referência instrumental externa: [ISRAMAR Hadera — temperatura](https://isramar.ocean.org.il/isramar2009/station/HaderaCTD.aspx) e [ondas/correntes](https://isramar.ocean.org.il/isramar2009/station/HaderaRDI.aspx).
 
-A tela inicial prioriza altura, direção e período de ondas, componentes de swell
-e mar de vento, vento/rajadas em nós e temperatura da água. Há previsão horária
-24/48 h, UV, chuva, visibilidade e horários de nascer/pôr do sol. O clima geral
-permanece disponível em seção expansível. Interface HE/EN, referências por campo,
-links às requisições reais e coordenadas de grade retornadas estão implementados.
+A página deve distinguir **previsões de modelos** de **medições de sensores**. Dados indisponíveis não devem ser inventados. O hebraico é o idioma padrão (`lang=he`, `dir=rtl`) com seletor para inglês (`lang=en`, `dir=ltr`) e preferência no navegador.
 
-[Metodologia, campos e fontes auditadas](docs/SURF-SOURCES.md). Não há notas de
-surf, altura de quebra inventada, classificação onshore/offshore sem orientação
-local ou garantia de segurança. Vento e mar podem falhar independentemente;
-os campos esportivos do serviço com falha são limpos.
+## 3. Publicar no GitHub Pages
 
-Uma validação local em Chromium recebeu HTTP 200 dos serviços meteorológico e marítimo e exibiu dados
-reais, sem exceções JavaScript. O [relatório](verification/surf-live.json) guarda
-as URLs e o horário daquele ensaio; não é usado como cache pela aplicação.
-Isso não comprova implantação nem disponibilidade futura do GitHub Pages.
+1. Criar conta no [GitHub](https://github.com) e repositório público `netanya-weather`.
+2. No repositório vazio clicar em **uploading an existing file**; se já tiver conteúdo, em **Add file → Upload files**.
+3. Enviar `index.html`, `sports.js`, `sports.css` e confirmar com **Commit changes**.
+4. Em **Settings → Pages**, selecionar **Deploy from a branch → main → /(root) → Save**. Se o projeto já usa um workflow Actions, preservar sua configuração.
+5. Esperar a implantação; abrir `https://USUARIO.github.io/netanya-weather/` no celular e testar.
 
-## 2. Publicar no GitHub Pages
+No projeto atual a URL efetiva é **https://haymvi.github.io/netanya-weather/**. Essa é a URL que está dentro do QR Code.
 
-No GitHub, use `haymvi/netanya-weather`. Para uma implantação nova: adicione os
-arquivos na raiz, commit em main, Settings → Pages → Deploy from a branch → main
-→ /(root) → Save. Se já houver workflow de Pages via Actions, mantenha o fluxo
-existente. Aguarde a implantação terminar e abra a URL informada pelo GitHub.
+## 4. Gerar QR Code e geometria 3D
 
-A URL codificada no modelo recebido é:
-https://haymvi.github.io/netanya-weather/
+1. Criar um QR Code **SVG** usando a URL pública exata.
+2. Usar módulos pretos e base branca sem logotipo sobre o código. Reservar, idealmente, **quatro módulos de margem branca** ao redor.
+3. Testar o SVG com a câmera antes de modelar.
+4. Transformar o QR SVG em **geometria volumétrica** (ex.: via CAD), com os módulos pretos elevados sobre uma base branca. Adicionar uma alça/anel integrados à base.
+5. Exportar componentes com XY alinhado ou gerar um STL com volumes distinguíveis por altura.
 
-O fato de o QR conter essa URL não prova que ela está publicada ou funcionando
-hoje. Confirme página, idiomas, APIs e downloads no endereço público. Não renomeie
-o repositório ou o caminho sem considerar os chaveiros já impressos.
+**Geometria nominal do teste bicolor:**
 
-## 3. QR e modelo
+| Parte | Z nominal | Filamento |
+|---|---:|---|
+| Base e alça | 0–0,40 mm | 1: branco |
+| Módulos elevados de QR | 0,40–0,80 mm | 2: preto |
+| Altura do modelo | 0,80 mm | dois materiais |
 
-Para um modelo novo, gere a matriz real do QR a partir da URL pública validada,
-use preto sobre branco, preserve quatro módulos de quiet zone e confira leitura
-antes de modelar. Não desenhe módulos aproximados e não use textura como
-substituto de geometria 3D. O nível Q/H foi uma recomendação anterior, não um
-parâmetro confirmado do arquivo recebido.
+A geometria de teste já utilizada tinha aproximadamente **41,43 mm de largura** e **47,88 mm de altura incluindo a alça**. A alça de 0,4 mm é delicada: validar resistência e considerar uma versão mais espessa para uso permanente. As medidas nominais não garantem um número exato de camadas; isso depende da configuração do slicer.
 
-Para reproduzir o trabalho existente, use o 3MF original incluído. A projeção
-real dele foi decodificada para a URL correta; seu histórico CAD anterior não
-está disponível integralmente neste checkout.
+## 5. Montar o projeto no OrcaSlicer
 
-| Versão | Corpo / altura com olhal | Branco + preto | Furo | Margem lateral |
-|---|---|---|---|---|
-| Proposta antiga do chat | Dimensões ainda sugeridas | 1,0 + 1,2 mm | ~5 mm sugeridos | ≥4 módulos pretendidos |
-| 3MF original recebido | 48 / 60,9 mm | 1,2 + 1,0 mm | 6 mm | 6,57 mm |
-| Teste 2+2 | 48 / 60,9 mm | 0,4 + 0,4 mm | 6 mm | 6,57 mm |
-| Teste 2+2 reduzido | 41,43 / 47,88 mm | 0,4 + 0,4 mm | 3 mm | 3,285 mm |
+1. Selecionar a impressora **Flashforge AD5X — bico 0.4 mm**.
+2. Para reproduzir a peça, abrir o projeto `QR_4_CAMADAS.3mf` que já contém a atribuição dos dois materiais. Para novo modelo, importar os dois volumes alinhados ou pintar a faixa superior usando **Color Painting / Height Range**, conforme a geometria.
+3. Configurar **Filamento 1: PLA branco** e **Filamento 2: PLA preto**.
+4. Confirmar que o corpo/anel usam o filamento 1 e o QR usa o filamento 2.
+5. Ajustar alturas de camada. Para duas camadas de 0,20 mm em branco e duas de 0,20 mm em preto, configurar **a primeira camada e as regulares em 0,20 mm**. Um preset de 0,16 mm pode gerar cinco camadas ou outra altura final.
+6. Executar **Slice plate → Preview**, escolher visualização por **Filament** e verificar as regiões e a transição.
 
-O último teste reduz o olhal inteiro em 50% e mantém o QR em XY. A margem
-3,285 mm foi escolhida explicitamente pelo usuário após o alerta de ficar abaixo
-da quiet zone recomendada. Isso é um teste, não validação de leitura nem escolha
-final de resistência mecânica.
+**Não basta colorir a visualização:** a atribuição precisa corresponder a dois materiais físicos e resultar em seleção real de ferramentas.
 
-## 4. Fatiamento AD5X
+## 6. Salvar 3MF e exportar G-code
 
-Confirme o bico real: nesta sessão o usuário confirmou 0,4 mm. Branco no canal
-físico 1 e preto no 2. Foram usados perfis oficiais Flashforge AD5X/PLA Basic,
-resolvidos em JSON, com execução do OrcaSlicer 2.3.1 Linux. O executável não era
-Orca-Flashforge; essa diferença é relevante para o fluxo de ativação IFS.
+- **Save Project As → .3mf:** arquivo editável com objetos, materiais e parâmetros do slicer.
+- **Export plate sliced file → .gcode:** instruções fatiadas para a impressora.
 
-Para o original: 11 camadas a 0,20 mm, seis brancas e cinco pretas. Para os testes:
-quatro camadas, duas brancas e duas pretas. Temperaturas selecionadas: 215 °C
-inicial, 210 °C posterior, mesa PEI texturizada 60 °C. Sem suportes e com torre de
-purga. A primeira camada foi corrigida do padrão 0,25 para 0,20 mm.
+Conferir no G-code a presença de **`T0`** (primeiro filamento) e **`T1`** (segundo filamento) na transição prevista, bem como as alturas reais Z. O arquivo que foi utilizado no teste continha uma troca de ferramenta registrada e a executou corretamente quando o IFS foi ativado.
 
-O perfil oficial de processo programa paredes externas 200, internas 300,
-topo 200 e deslocamentos 500 mm/s. Os limites de fluxo, resfriamento, aceleração
-e pequenos trajetos continuam valendo; não se trata de mover tudo a 600 mm/s.
+## 7. **Passo fundamental na Flashforge AD5X: Enable IFS**
 
-O helper e os comandos completos estão em fabrication/README.md. Ele é
-específico do original de 11 camadas; não aplica automaticamente os testes 2+2.
-Os scripts de alteração dos testes estão preservados em fabrication/tests/.
+1. Confirmar no IFS os filamentos físicos: **canal 1 = PLA branco**, **canal 2 = PLA preto**.
+2. Enviar o **G-code** fatiado para a AD5X ou abrir o arquivo via USB.
+3. **Após escolher o arquivo na tela da impressora, marcar `Enable IFS`.**
+4. **Conferir que IFS está ligado antes de tocar em Print/Start.**
+5. Iniciar a impressão e acompanhar a troca automática do branco para o preto.
 
-## 5. Validar digitalmente e fisicamente
+A documentação da Flashforge informa que em **G-code** a correspondência dos canais IFS segue os números dos filamentos incluídos no arquivo. Para 3MF fatiado, há um fluxo de configuração de canais separado. O trabalho bicolor atual foi **efetivamente impresso com sucesso com IFS ligado**.
 
-Confira a saída real e o status do fatiador, camadas, extrusão por ferramenta,
-alturas, purga, aquecimento e desligamento. Decodifique uma imagem reconstruída
-dos caminhos, registrando as limitações da simulação.
+Fonte oficial: [Flashforge — Print via Orca-Flashforge](https://wiki.flashforge.com/en/ad5x/manual/print_via_orca_flashforge) e [Print G-code from printer memory](https://www.flashforge.com/pt/a/docs/ad5x/print-built-in-models-on-ad5x).
 
-**Depois disso ainda é preciso testar o IFS real.** A impressão toda branca
-mostrou que T0/T1 no arquivo não bastaram no fluxo utilizado. Ativação e
-mapeamento podem ser parâmetros do trabalho separados do G-code. O relato
-[OrcaSlicer #10783](https://github.com/OrcaSlicer/OrcaSlicer/issues/10783) descreve
-essa limitação e iniciar pela tela com IFS habilitado como alternativa. Isso não
-comprova qual foi a causa exata na máquina do usuário.
+## 8. Controle de qualidade
 
-Não iniciar esperando troca automática se não houver como verificar o IFS e os
-canais na tela. O ícone de documento indica ausência de miniatura reconhecida,
-mas não informa sozinho o estado do IFS. Os primeiros arquivos não tinham miniatura. A revisão IFS V3 incluiu PNG e
-metadados no início, e o usuário confirmou o reconhecimento da miniatura
-preta/branca. Isso ainda não confirma a troca física.
+1. Deixar esfriar e retirar cuidadosamente da mesa.
+2. Verificar a base branca e os módulos pretos em relevo.
+3. Escanear **o QR impresso de verdade** em um smartphone e confirmar que abre a URL correta.
+4. Verificar a resistência do anel antes de usar no chaveiro.
+5. Guardar juntos STL, projeto 3MF e G-code com a identificação do perfil AD5X e dos dois filamentos.
 
-Observe as duas camadas brancas e as duas pretas, espere esfriar e escaneie com
-um celular. Depois confirme resistência e dimensões de uma versão definitiva.
+A troca física de cor foi confirmada. A legibilidade de cada exemplar impresso e a resistência da alça precisam ser verificadas em cada lote.
 
-## 6. Arquivos e versões
+## 9. Manutenção do site
 
-- [Kit completo](downloads/netanya-ad5x-kit.zip): histórico, original, perfis,
-  scripts, G-codes e relatórios. Inclui testes e estado de validação.
-- [Teste atual: 2+2, borda/olhal reduzidos](downloads/netanya-ad5x-test-reduced.zip).
-- [Teste 2+2 sem redução XY](downloads/netanya-ad5x-test-2plus2.zip).
-- [Original, velocidades oficiais](downloads/netanya-ad5x-official.zip).
-- [Original, velocidades conservadoras](downloads/netanya-ad5x-conservative.zip).
+Editar os arquivos web, salvar commit no mesmo repositório e esperar a implantação de Pages. Manter a URL do QR **inalterada**. O mesmo chaveiro continua funcionando após atualizações de previsão, layout ou tradução.
 
-Tempos estimados, não medidos: 30min24s original conservador; 13min17s original
-oficial; 7min25s teste 2+2; 6min39s teste reduzido. A impressão branca foi
-reportada antes do teste atual. O resultado do teste atual está pendente.
+---
 
-- [Revisão IFS V3](downloads/netanya-ad5x-ifs-v3.zip): reorganização de cabeçalho,
-  miniatura reconhecida pelo usuário e emissor LAN com mapeamento explícito.
-  O reconhecimento da miniatura não valida troca física; essa confirmação segue pendente.
-
-## 7. Manutenção e publicação da documentação
-
-O botão vermelho no final do dashboard abre `howto.html`, mantendo o idioma.
-`how-it-was-made.html` é um endereço antigo de compatibilidade. HOWTO.md explica
-a integração; docs/CODEX-HISTORICO.md contém os detalhes verificáveis desta etapa.
-
-Para publicar, revise e envie index.html, howto.html, how-it-was-made.html,
-HOWTO.md, sports.js, sports.css, docs/, fabrication/ e downloads/ no mesmo commit/fluxo de implantação.
-Não envie só os dois HTML, pois as imagens e os downloads são arquivos reais
-referenciados por eles. Verifique todas as URLs após a implantação.
-
-Estado desta entrega: arquivos locais preparados; sem push ou novo deployment
-confirmado. Não classificar o projeto como concluído enquanto faltarem teste
-multicor, leitura física e verificação do site público com dados reais.
-
-## Créditos
-
-ChatGPT e Codex (OpenAI), com direção e testes físicos pelo usuário. GitHub Pages
-(hospedagem), Open-Meteo (previsões), Flashforge (perfis), OrcaSlicer (fatiamento),
-ZXing-C++ (decodificação) e Shapely (geometria do teste reduzido). Esses créditos
-não representam homologação do arquivo pelo fabricante da impressora.
-
-### Precisão da temperatura e unidades de velocidade
-
-A temperatura da água é uma estimativa Météo-France, solicitada separadamente e
-explicitamente identificada, não uma medição em praia de Netanya. A fonte [S]
-mostra a célula, distância, hora e dados brutos; não houve confirmação local
-independente. O fato de a API retornar 27,5 °C não comprova um termômetro na praia.
-Todas as velocidades exibem nós e km/h, inclusive rajadas e painel geral.
-Veja a auditoria em docs/SURF-SOURCES.md e o relatório atualizado de três consultas.
+**Créditos:** projeto e testes físicos conduzidos pelo usuário com colaboração de ChatGPT e Codex. APIs Open-Meteo e fontes instrumentais ISRAMAR; hospedagem GitHub Pages; modelagem/fatiamento OrcaSlicer e impressão Flashforge AD5X com IFS.
