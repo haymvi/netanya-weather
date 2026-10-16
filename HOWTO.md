@@ -44,13 +44,13 @@
 
 **כלל נתונים:** תחזית מודל אינה מדידת מכשיר. אין להציג נתון חסר כ־0, או נתון מודל כאילו נמדד בחוף. מקורות חדרה מוצגים להשוואה, ואין לייחס אותם ישירות לחוף בנתניה.
 
-האתר נפתח בעברית, \`lang="he"\` ו־\`dir="rtl"\`, ומאפשר מעבר לאנגלית, \`lang="en"\` ו־\`dir="ltr"\`. בחירת השפה נשמרת בדפדפן.
+האתר נפתח בעברית, `lang="he"` ו־`dir="rtl"`, ומאפשר מעבר לאנגלית, `lang="en"` ו־`dir="ltr"`. בחירת השפה נשמרת בדפדפן.
 
 ## 3. העלאה ל־GitHub Pages
 
-1. נכנסים ל־[GitHub](https://github.com) ויוצרים מאגר **Public** בשם \`netanya-weather\`.
+1. נכנסים ל־[GitHub](https://github.com) ויוצרים מאגר **Public** בשם `netanya-weather`.
 2. במאגר חדש וריק: לוחצים על **uploading an existing file** מתחת ל־Quick setup. במאגר שכבר מכיל קבצים: **Add file → Upload files**.
-3. מעלים את \`index.html\`, \`sports.js\`, \`sports.css\` ושאר קבצי האתר ולוחצים על **Commit changes**.
+3. מעלים את `index.html`, `sports.js`, `sports.css` ושאר קבצי האתר ולוחצים על **Commit changes**.
 4. פותחים **Settings → Pages → Deploy from a branch → main → /(root) → Save**. אם כבר קיימת פריסה דרך GitHub Actions, שומרים על השיטה הקיימת.
 5. מחכים שהפריסה תושלם, פותחים את הכתובת בטלפון ובודקים את התצוגה בשתי השפות.
 
@@ -114,13 +114,13 @@
 2. בודקים שהבסיס/הטבעת לבנים ושה־QR המוגבה שחור.
 3. **סורקים את ההדפסה הפיזית בטלפון** ובודקים שהכתובת הנכונה נפתחת.
 4. בודקים את חוזק הטבעת לפני שימוש יומיומי.
-5. שומרים ביחד את קובץ ה־STL, הפרויקט \`.3mf\`, קובץ \`.gcode\` ואת הגדרות המדפסת.
+5. שומרים ביחד את קובץ ה־STL, הפרויקט `.3mf`, קובץ `.gcode` ואת הגדרות המדפסת.
 
 **אימות:** החלפת הצבע בהדפסה הפיזית הצליחה. סריקה ועמידות הן בדיקות נפרדות לכל חלק.
 
 ## 9. תחזוקה
 
-ניתן לעדכן את \`index.html\`, \`sports.js\` ו־\`sports.css\`, לבצע Commit ולהמתין לעדכון GitHub Pages. יש **לשמור על הכתובת הציבורית** כדי שה־QR המודפס ימשיך לעבוד. עדכון תחזית, טקסט או עיצוב אינו מצריך G-code חדש.
+ניתן לעדכן את `index.html`, `sports.js` ו־`sports.css`, לבצע Commit ולהמתין לעדכון GitHub Pages. יש **לשמור על הכתובת הציבורית** כדי שה־QR המודפס ימשיך לעבוד. עדכון תחזית, טקסט או עיצוב אינו מצריך G-code חדש.
 
 ---
 
@@ -160,13 +160,13 @@ Data sources:
 
 **Data rule:** distinguish model forecasts from instrument measurements. Do not display missing values as zero or pass model output off as a local beach observation. Hadera stations are a nearby reference, not on-beach Netanya instruments.
 
-Default interface: Hebrew, \`lang="he"\` / \`dir="rtl"\`. Optional English: \`lang="en"\` / \`dir="ltr"\`. Store the preference in the browser.
+Default interface: Hebrew, `lang="he"` / `dir="rtl"`. Optional English: `lang="en"` / `dir="ltr"`. Store the preference in the browser.
 
 ## 3. Publish with GitHub Pages
 
-1. Sign in to [GitHub](https://github.com) and create a **Public** repository called \`netanya-weather\`.
+1. Sign in to [GitHub](https://github.com) and create a **Public** repository called `netanya-weather`.
 2. In an empty repository use **uploading an existing file** under Quick setup. In an existing repository use **Add file → Upload files**.
-3. Upload \`index.html\`, \`sports.js\`, \`sports.css\` and supporting site files; click **Commit changes**.
+3. Upload `index.html`, `sports.js`, `sports.css` and supporting site files; click **Commit changes**.
 4. Select **Settings → Pages → Deploy from a branch → main → /(root) → Save**. Preserve an existing GitHub Actions deployment if one is already configured.
 5. Wait for deployment. Open the published HTTPS URL on a phone and test both languages.
 
@@ -195,7 +195,7 @@ The test model was approximately **41.43 mm wide** and **47.88 mm tall including
 ## 5. Configure OrcaSlicer for AD5X
 
 1. Select **Flashforge AD5X, 0.4 mm nozzle** in OrcaSlicer or Orca-Flashforge.
-2. For the working model, open \`QR_4_CAMADAS.3mf\`, which contains the two material assignments. When starting from STL, import aligned parts or use **Color Painting → Height Range**, as the geometry permits.
+2. For the working model, open `QR_4_CAMADAS.3mf`, which contains the two material assignments. When starting from STL, import aligned parts or use **Color Painting → Height Range**, as the geometry permits.
 3. Configure **Filament 1 = white PLA** and **Filament 2 = black PLA**.
 4. Verify that base/loop use material 1 and upper QR modules use material 2.
 5. To obtain exactly two 0.20 mm layers per colour, set **both first-layer height and regular layer height to 0.20 mm**. A regular-layer preset of 0.16 mm can produce a different actual layer count.
@@ -234,7 +234,7 @@ The printer's sliced-3MF workflow may use different channel-mapping screens. The
 
 ## 9. Maintain the website
 
-Update \`index.html\`, \`sports.js\` or \`sports.css\`, commit to GitHub and wait for Pages deployment. **Keep the public URL unchanged** so existing printed codes continue to work. Updating weather displays, text or layout does not require another 3D print.
+Update `index.html`, `sports.js` or `sports.css`, commit to GitHub and wait for Pages deployment. **Keep the public URL unchanged** so existing printed codes continue to work. Updating weather displays, text or layout does not require another 3D print.
 
 ---
 
