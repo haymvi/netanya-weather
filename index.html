@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#f5f9fc" name="theme-color"/>
+<meta content="מזג האוויר בנתניה: טמפרטורה, רוח, גשם, תחזית שעתית ולחמישה ימים, טמפרטורת הים וגובה הגלים." name="description"/>
+<title>מזג האוויר בנתניה | תחזית וים</title>
+<style>
+    :root { color-scheme:light; --ink:#163047; --muted:#647a8a; --bg:#f5f9fc; --paper:#fff; --border:#e5eef4; --blue:#127cbb; --deep:#125b8b; --sun:#f0a143; --danger:#b95050; --radius:22px; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:linear-gradient(180deg,#e9f6fc 0,#f5f9fc 34%,#f5f9fc 100%); color:var(--ink); font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    button { font:inherit; }
+    .wrap { width:min(1100px,calc(100% - 36px)); margin:0 auto; }
+    header { padding:30px 0 21px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .brandmark { display:grid; place-items:center; width:44px; height:44px; border-radius:14px; color:#fff; background:linear-gradient(145deg,#4bb6df,#1b80b8); box-shadow:0 8px 20px #2378ac22; }
+    .brandmark svg { width:25px; height:25px; }
+    .brand-name { font-weight:800; letter-spacing:-.035em; font-size:20px; }
+    .brand-sub { color:var(--muted); font-size:12px; margin-top:-3px; }
+    .refresh { display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:1px solid #cfe3ed; background:#fff; color:#175d89; font-weight:700; padding:10px 14px; border-radius:12px; transition:background .2s; }
+    .refresh:hover { background:#edf8fe; }
+    .refresh:focus-visible,.tabs button:focus-visible { outline:3px solid #81c9ef; outline-offset:3px; }
+    .refresh svg { width:17px; height:17px; }
+    .refresh:disabled { opacity:.55; cursor:wait; }
+    .statusbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:13px; color:var(--muted); font-size:12px; flex-wrap:wrap; }
+    .status { display:inline-flex; align-items:center; gap:7px; }
+    .status-dot { background:#48a781; width:7px; height:7px; border-radius:50%; }
+    .status.error .status-dot { background:#d77362; }
+    .hero { background:linear-gradient(115deg,#147cae 0%,#1b8fc0 48%,#5fb9d8 100%); color:#fff; border-radius:27px; padding:31px 36px; display:grid; grid-template-columns:minmax(0,1.25fr) minmax(240px,.75fr); gap:20px; overflow:hidden; position:relative; box-shadow:0 18px 38px #1f89ba22; }
+    .hero:after { content:""; position:absolute; width:350px; height:350px; top:-160px; right:-95px; border:55px solid #ffffff16; border-radius:50%; pointer-events:none; }
+    .eyebrow { letter-spacing:.13em; text-transform:uppercase; font-size:11px; font-weight:750; opacity:.85; }
+    h1 { font-size:clamp(28px,5vw,43px); letter-spacing:-.05em; margin:3px 0 14px; line-height:1.15; }
+    .temp-line { display:flex; align-items:baseline; gap:15px; }
+    .big-temp { font-size:clamp(76px,11vw,112px); font-weight:650; line-height:.98; letter-spacing:-.08em; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .hero-detail { display:flex; flex-direction:column; gap:3px; }
+    .sky-label { font-size:20px; font-weight:650; }
+    .feels { font-size:14px; color:#e0f2fa; }
+    .hero-day { color:#daf1fb; font-size:13px; margin-top:17px; }
+    .sun-visual { display:flex; justify-content:center; align-items:center; position:relative; min-height:210px; z-index:1; }
+    .sun-visual .orb { font-size:clamp(112px,16vw,175px); filter:drop-shadow(0 18px 20px #074f8c30); line-height:1; }
+    .sun-caption { position:absolute; bottom:0; font-size:12px; color:#eaf8fe; text-align:center; }
+    .section-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; margin:30px 1px 14px; }
+    .section-heading h2 { font-size:20px; margin:0; letter-spacing:-.035em; }
+    .section-heading p { margin:0; font-size:12px; color:var(--muted); }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .card { background:var(--paper); border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:0 4px 20px #204f702a; box-shadow:0 4px 18px #204f700a; min-width:0; }
+    .metric-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:19px; }
+    .metric-title { font-size:13px; font-weight:650; color:var(--muted); }
+    .glyph { width:34px; height:34px; border-radius:11px; display:grid; place-items:center; background:#eaf6fc; color:#1888c2; }
+    .glyph svg { width:19px; height:19px; }
+    .glyph.warm { color:#df9436; background:#fff5e6; }
+    .metric-value { font-size:29px; font-weight:750; letter-spacing:-.052em; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .unit { font-size:14px; font-weight:600; color:var(--muted); letter-spacing:0; }
+    .metric-note { color:var(--muted); font-size:12px; margin-top:4px; min-height:18px; }
+    .forecast-panel { padding:22px 22px 16px; }
+    .panel-title { display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
+    .panel-title h3 { font-size:17px; letter-spacing:-.025em; margin:0; }
+    .tabs { display:inline-flex; gap:3px; padding:3px; border-radius:12px; background:#edf4f8; }
+    .tabs button { cursor:pointer; border:0; border-radius:9px; padding:6px 15px; font-weight:750; font-size:12px; background:transparent; color:#647a8a; }
+    .tabs button.active { color:#1c638c; background:white; box-shadow:0 1px 5px #abc4d044; }
+    .legend { display:flex; gap:17px; flex-wrap:wrap; font-size:12px; color:var(--muted); padding:15px 0 8px; }
+    .legend span { display:flex; align-items:center; gap:6px; }
+    .legend i { display:inline-block; width:17px; height:4px; border-radius:5px; background:var(--blue); }
+    .legend i.rain { background:#81c9ec; }
+    .chart-wrap { width:100%; overflow-x:auto; }
+    #tempChart { display:block; width:100%; height:auto; min-height:180px; }
+    #rainChart { display:block; width:100%; height:auto; min-height:100px; margin-top:0; }
+    .hourly-scroller { overflow-x:auto; display:flex; gap:9px; padding:13px 1px 6px; scrollbar-width:thin; }
+    .hour-tile { flex:0 0 87px; text-align:center; border-radius:13px; padding:10px 7px 9px; background:#f1f7fa; color:#486475; }
+    .hour-tile:first-child { background:#e5f5fd; }
+    .hour-tile .hour { font-size:12px; font-weight:700; }
+    .hour-tile .ico { font-size:24px; margin:6px 0; }
+    .hour-tile .deg { font-size:17px; font-weight:800; color:var(--ink); }
+    .hour-tile .chance { font-size:11px; color:#3987b4; margin-top:3px; }
+    .days { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
+    .day-card { text-align:center; padding:20px 11px 18px; }
+    .day-name { font-weight:800; font-size:14px; }
+    .day-date { color:var(--muted); font-size:12px; }
+    .day-icon { font-size:39px; line-height:1.6; }
+    .day-label { color:#69808d; font-size:12px; height:35px; display:flex; align-items:center; justify-content:center; line-height:1.25; }
+    .day-temp { font-size:21px; font-weight:800; white-space:nowrap; }
+    .day-temp span { color:#8298a5; font-weight:600; }
+    .day-rain { border-top:1px solid #edf2f5; padding-top:10px; margin-top:12px; font-size:12px; color:#3987b4; }
+    .sea-panel { display:grid; grid-template-columns:1.2fr repeat(2,1fr); gap:10px; align-items:center; }
+    .sea-header { display:flex; gap:12px; align-items:center; }
+    .sea-icon { background:#e6f5f9; color:#218aa9; font-size:27px; width:55px; height:55px; display:grid; place-items:center; border-radius:15px; }
+    .sea-name { font-size:15px; font-weight:800; }
+    .sea-sub { font-size:12px; color:var(--muted); }
+    .sea-data { padding-left:18px; border-left:1px solid #e8eff3; }
+    .sea-num { font-weight:800; font-size:25px; }
+    .sea-caption { color:var(--muted); font-size:12px; }
+    .footnote { color:#79909e; font-size:12px; line-height:1.65; margin:13px 2px 6px; }
+    footer { text-align:center; padding:30px 0 35px; color:#718b9c; font-size:12px; }
+    a { color:#197dae; }
+    .error-box { background:#fff0ec; border:1px solid #efc4b7; color:#8f3d36; padding:13px 16px; border-radius:12px; margin-bottom:14px; display:none; font-size:13px; }
+    .error-box.show { display:block; }
+    .skeleton { opacity:.65; }
+    @media(max-width:820px) { .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .hero { grid-template-columns:1fr 210px; } .days { gap:8px; } .day-card { padding:15px 6px; } .day-temp { font-size:17px; } }
+    @media(max-width:560px) { .wrap { width:calc(100% - 26px); } header { padding:18px 0 17px; } .brand-name { font-size:18px; } .brandmark { width:41px; height:41px; } .refresh { padding:9px 10px; font-size:12px; } .hero { grid-template-columns:1fr; padding:25px 23px 19px; gap:0; } .hero .sun-visual { min-height:0; position:absolute; right:13px; top:64px; opacity:.82; } .sun-visual .orb { font-size:76px; } .sun-caption { display:none; } .big-temp { font-size:82px; } .hero-detail { position:relative; z-index:2; } .temp-line { gap:13px; } .sky-label { font-size:16px; max-width:150px; } .hero-day { max-width:80%; } .section-heading { margin-top:25px; } .section-heading h2 { font-size:18px; } .metrics { gap:9px; } .card { padding:15px; border-radius:17px; } .metric-head { margin-bottom:16px; } .metric-value { font-size:25px; } .unit { font-size:12px; } .forecast-panel { padding:16px 11px 13px; } .panel-title { padding:0 5px; } #tempChart { min-height:135px; } #rainChart { min-height:80px; } .days { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:thin; padding-bottom:5px; } .day-card { flex:0 0 137px; scroll-snap-align:start; } .sea-panel { grid-template-columns:repeat(2,1fr); gap:17px; } .sea-header { grid-column:1/-1; } .sea-data { padding-left:9px; } }
+    @media(prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  
+/* Hebrew-first interface, native RTL with LTR charts and measurements. */
+.header-actions { display:flex; gap:9px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.language-switch { display:inline-flex; align-items:center; gap:2px; padding:3px; border:1px solid #cfe3ed; border-radius:12px; background:#eaf2f8; }
+.lang-btn { cursor:pointer; border:0; padding:8px 11px; font-size:12px; font-weight:750; background:transparent; color:#526b7a; border-radius:9px; }
+.lang-btn.active { color:#12608e; background:#fff; box-shadow:0 2px 7px #204f701b; }
+.lang-btn:focus-visible { outline:3px solid #81c9ef; outline-offset:2px; }
+.sea-data { padding-inline-start:18px; padding-left:0; border-inline-start:1px solid #e8eff3; border-left:0; }
+#tempChart,#rainChart { direction:ltr; }
+.big-temp,.metric-value,.day-temp,.sea-num { font-variant-numeric:tabular-nums; }
+html[dir='rtl'] .metric-value,html[dir='rtl'] .sea-num { direction:ltr; text-align:right; }
+html[dir='rtl'] .day-temp,html[dir='rtl'] .day-rain { direction:ltr; }
+html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
+.brand { min-width:0; }
+@media(max-width:560px){
+ header { flex-wrap:wrap; }
+ .header-actions { margin-inline-start:auto; }
+ .lang-btn { padding:7px 9px; }
+ .sea-data { padding-inline-start:9px; padding-left:0; }
+ html[dir="rtl"] .hero .sun-visual { right:auto; left:13px; }
+ html[dir="ltr"] .hero .sun-visual { right:13px; left:auto; }
+}
+@media(max-width:380px){ .brand-name{font-size:17px;} .header-actions{width:100%; justify-content:space-between;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="brand"><div aria-hidden="true" class="brandmark"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M3 18c2.7 0 2.7-1.8 5.4-1.8s2.7 1.8 5.4 1.8 2.7-1.8 5.4-1.8H21"></path><circle cx="16.5" cy="7" r="3.5"></circle><path d="M3 10h7M5 6h4"></path></svg></div><div><div class="brand-name" data-i18n="brand">מזג האוויר בנתניה</div><div class="brand-sub" data-i18n="brandSub">ישראל · חוף הים התיכון</div></div></div>
+<div class="header-actions"><div aria-label="שפה / Language" class="language-switch" role="group"><button aria-pressed="true" class="lang-btn active" dir="rtl" id="langHe" lang="he" type="button">עברית</button><button aria-pressed="false" class="lang-btn" dir="ltr" id="langEn" lang="en" type="button">English</button></div><button aria-label="רענון נתוני מזג האוויר" class="refresh" data-i18n-aria-label="refreshAria" id="refreshBtn" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-5L4 8"></path><path d="M4 3v5h5"></path><path d="M4 13a8 8 0 0 0 14 5l2-2"></path><path d="M15 16h5v5"></path></svg> <span data-i18n="refresh">רענון</span></button></div>
+</header>
+<div class="statusbar"><div class="status" id="status"><span class="status-dot"></span><span aria-live="polite" data-i18n="loading" id="statusText" role="status">טוען תחזית…</span></div><div data-i18n="localTZ" id="updatedAt">שעון מקומי · נתניה</div></div>
+<div class="error-box" id="errorBox" role="alert"></div>
+<main>
+<section aria-label="תנאי מזג האוויר כעת" class="hero" data-i18n-aria-label="heroAria">
+<div><div class="eyebrow" data-i18n="heroEyebrow">מזג האוויר כעת · נתניה</div><h1 data-i18n="heroDate" id="dateHeader">מזג האוויר היום</h1>
+<div class="temp-line"><span class="big-temp skeleton" id="currentTemp">--°</span><div class="hero-detail"><span class="sky-label" data-i18n="loadingShort" id="condition">טוען…</span><span class="feels" data-i18n="feelsEmpty" id="feels">טמפרטורה מורגשת --°</span></div></div>
+<div class="hero-day" data-i18n="todayRangeEmpty" id="todayRange">מקס׳ --° · מינ׳ --°</div>
+</div>
+<div aria-hidden="true" class="sun-visual"><div class="orb" id="heroIcon">🌤️</div><div class="sun-caption" data-i18n="sunCaption">תחזית המבוססת על מודלים</div></div>
+</section>
+<section aria-label="מדדים מטאורולוגיים" data-i18n-aria-label="metricsAria">
+<div class="section-heading"><h2 data-i18n="nowSection">עכשיו בנתניה</h2><p data-i18n="metricsSubtitle">נתונים חיוניים</p></div>
+<div class="metrics">
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_wind">רוח</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M3 8h12a3 3 0 1 0-3-3M2 12h18M4 16h10a3 3 0 1 1-3 3"></path></svg></span></div><div class="metric-value"><span id="wind">--</span> <span class="unit">km/h</span></div><div class="metric-note" data-i18n="windEmpty" id="windDirection">כיוון --</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_humidity">לחות יחסית</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 3s-7 8-7 12a7 7 0 0 0 14 0c0-4-7-12-7-12Z"></path></svg></span></div><div class="metric-value"><span id="humidity">--</span><span class="unit"> %</span></div><div class="metric-note" data-i18n="humidityNote">בגובה 2 מטרים</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_pressure">לחץ אטמוספרי</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M5 19a9 9 0 1 1 14 0M12 12l4-4M4 20h16"></path><circle cx="12" cy="12" r="1"></circle></svg></span></div><div class="metric-value"><span id="pressure">----</span> <span class="unit">hPa</span></div><div class="metric-note" data-i18n="pressureNote">מותאם לגובה פני הים</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_uv">מדד קרינה UV</span><span class="glyph warm"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></span></div><div class="metric-value" id="uv">--</div><div class="metric-note" data-i18n="uvEmpty" id="uvLevel">מדד משוער</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_rainChance">סיכוי לגשם</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M5 15a5 5 0 0 1 1-9 7 7 0 0 1 13 4 4 4 0 0 1 0 8h-1M8 17l-1 3m6-3-1 3m6-3-1 3"></path></svg></span></div><div class="metric-value"><span id="rainChance">--</span><span class="unit"> %</span></div><div class="metric-note" data-i18n="rainNote">לשעה הנוכחית</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_precipTotal">משקעים חזויים</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 3s-7 8-7 12a7 7 0 0 0 14 0c0-4-7-12-7-12Z"></path><path d="M8 16a4 4 0 0 0 4 4"></path></svg></span></div><div class="metric-value"><span id="rainTotal">--</span> <span class="unit">mm</span></div><div class="metric-note" data-i18n="precipNote">סך החיזוי להיום, לא מדידה</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_gust">משבי רוח</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M2 9h17a3 3 0 1 0-3-3M3 13h13M5 17h9a3 3 0 1 1-3 3"></path></svg></span></div><div class="metric-value"><span id="gust">--</span> <span class="unit">km/h</span></div><div class="metric-note" data-i18n="gustNote">הערכה לעכשיו</div></div>
+<div class="card"><div class="metric-head"><span class="metric-title" data-i18n="metric_cloudCover">עננות</span><span class="glyph"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M6 19h12a4 4 0 0 0 .5-8A7 7 0 0 0 5 10a4.5 4.5 0 0 0 1 9Z"></path></svg></span></div><div class="metric-value"><span id="cloud">--</span><span class="unit"> %</span></div><div class="metric-note" data-i18n="cloudNote">כיסוי עננים</div></div>
+</div>
+</section>
+<section aria-label="תחזית לפי שעה" data-i18n-aria-label="hoursAria">
+<div class="section-heading"><h2 data-i18n="hoursSection">השעות הקרובות</h2><p data-i18n="hoursSubtitle">טמפרטורה וגשם</p></div>
+<div class="card forecast-panel">
+<div class="panel-title"><h3 data-i18n="trendTitle">מגמת מזג האוויר</h3><div aria-label="טווח התחזית" class="tabs" data-i18n-aria-label="tabsAria" role="group"><button aria-pressed="true" class="active" data-i18n="btn12" id="btn12" type="button">12 שעות</button><button aria-pressed="false" data-i18n="btn24" id="btn24" type="button">24 שעות</button></div></div>
+<div class="legend"><span><i></i> <span data-i18n="temperatureLegend">טמפרטורה (°C)</span></span><span><i class="rain"></i> <span data-i18n="rainLegend">סיכוי לגשם (%)</span></span></div>
+<div class="chart-wrap"><svg aria-label="גרף טמפרטורה לפי שעה" data-i18n-aria-label="tempChartAria" id="tempChart" role="img" viewbox="0 0 830 202"><text data-i18n="chartLoading" fill="#79909e" x="10" y="90">טוען…</text></svg><svg aria-label="גרף הסתברות לגשם" data-i18n-aria-label="rainChartAria" id="rainChart" role="img" viewbox="0 0 830 115"></svg></div>
+<div aria-label="תחזית לפי שעה" class="hourly-scroller" data-i18n-aria-label="hourlyTilesAria" id="hourlyTiles"></div>
+</div>
+</section>
+<section aria-label="תחזית לחמישה ימים" data-i18n-aria-label="daysAria">
+<div class="section-heading"><h2 data-i18n="daysSection">תחזית ל־5 ימים</h2><p data-i18n="daysSubtitle">מינימום, מקסימום וגשם</p></div>
+<div class="days" id="days"><div class="card" data-i18n="loadingForecast">טוען תחזית…</div></div>
+</section>
+<section aria-label="תנאי הים" data-i18n-aria-label="seaAria">
+<div class="section-heading"><h2 data-i18n="seaSection">הים התיכון</h2><p data-i18n="seaSubtitle">תחזית חופית · נתניה</p></div>
+<div class="card sea-panel"><div class="sea-header"><div aria-hidden="true" class="sea-icon">🌊</div><div><div class="sea-name" data-i18n="seaName">תנאי הים</div><div class="sea-sub" data-i18n="seaLoading" id="marineStatus">טוען נתוני הים…</div></div></div><div class="sea-data"><div class="sea-num" id="seaTemp">-- °C</div><div class="sea-caption" data-i18n="seaTempLabel">טמפרטורת פני הים</div></div><div class="sea-data"><div class="sea-num" id="waveHeight">-- m</div><div class="sea-caption" data-i18n="waveLabel">גובה גלים משמעותי</div></div></div>
+<p class="footnote" data-i18n="seaNote">נתוני הים הם הערכות של תאי מודל הסמוכים לחוף. גובה הגלים המשמעותי אינו גובהו של כל גל. אין להשתמש בנתונים לצורך ניווט, קביעת בטיחות רחצה או התרעות סיכון.</p>
+</section>
+</main>
+<footer><span data-i18n="footerLead">נתונים ומודלים: </span><a href="https://open-meteo.com/" rel="noopener noreferrer" target="_blank">Open-Meteo</a> · <a href="https://open-meteo.com/en/docs/marine-weather-api" rel="noopener noreferrer" target="_blank">Marine API</a> · <span data-i18n="footerTail">נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.</span></footer>
+</div>
+<script>(() => {
+  'use strict';
+  const LAT = 32.3215, LON = 34.8532, TZ = 'Asia/Jerusalem';
+  const $ = id => document.getElementById(id);
+  const I18N = {"he":{"brand":"מזג האוויר בנתניה","brandSub":"ישראל · חוף הים התיכון","refresh":"רענון","refreshAria":"רענון נתוני מזג האוויר","loading":"טוען תחזית…","localTZ":"שעון מקומי · נתניה","heroAria":"תנאי מזג האוויר כעת","heroEyebrow":"מזג האוויר כעת · נתניה","heroDate":"מזג האוויר היום","loadingShort":"טוען…","feelsEmpty":"טמפרטורה מורגשת --°","todayRangeEmpty":"מקס׳ --° · מינ׳ --°","sunCaption":"תחזית המבוססת על מודלים","metricsAria":"מדדים מטאורולוגיים","nowSection":"עכשיו בנתניה","hoursSection":"השעות הקרובות","daysSection":"תחזית ל־5 ימים","seaSection":"הים התיכון","metricsSubtitle":"נתונים חיוניים","hoursSubtitle":"טמפרטורה וגשם","daysSubtitle":"מינימום, מקסימום וגשם","seaSubtitle":"תחזית חופית · נתניה","metric_wind":"רוח","metric_humidity":"לחות יחסית","metric_pressure":"לחץ אטמוספרי","metric_uv":"מדד קרינה UV","metric_rainChance":"סיכוי לגשם","metric_precipTotal":"משקעים חזויים","metric_gust":"משבי רוח","metric_cloudCover":"עננות","windEmpty":"כיוון --","humidityNote":"בגובה 2 מטרים","pressureNote":"מותאם לגובה פני הים","uvEmpty":"מדד משוער","rainNote":"לשעה הנוכחית","precipNote":"סך החיזוי להיום, לא מדידה","gustNote":"הערכה לעכשיו","cloudNote":"כיסוי עננים","hoursAria":"תחזית לפי שעה","daysAria":"תחזית לחמישה ימים","seaAria":"תנאי הים","trendTitle":"מגמת מזג האוויר","tabsAria":"טווח התחזית","btn12":"12 שעות","btn24":"24 שעות","temperatureLegend":"טמפרטורה (°C)","rainLegend":"סיכוי לגשם (%)","tempChartAria":"גרף טמפרטורה לפי שעה","rainChartAria":"גרף הסתברות לגשם","hourlyTilesAria":"תחזית לפי שעה","seaName":"תנאי הים","seaLoading":"טוען נתוני הים…","loadingForecast":"טוען תחזית…","chartLoading":"טוען…","seaTempLabel":"טמפרטורת פני הים","waveLabel":"גובה גלים משמעותי","seaNote":"נתוני הים הם הערכות של תאי מודל הסמוכים לחוף. גובה הגלים המשמעותי אינו גובהו של כל גל. אין להשתמש בנתונים לצורך ניווט, קביעת בטיחות רחצה או התרעות סיכון.","footer":"נתונים ומודלים: Open-Meteo · Marine API · נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי כל 15 דקות. הנתונים הנוכחיים הם הערכות מודל, ולא מדידות מתחנה מקומית.","footerLead":"נתונים ומודלים: ","footerTail":"נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.","statusUpdated":"התחזית עודכנה בהצלחה","updating":"מעדכן נתונים…","updateFailed":"עדכון הנתונים נכשל","parseFailed":"שגיאה בפענוח נתוני מזג האוויר: {detail}","apiFailed":"לא ניתן לטעון את התחזית. בדקו את החיבור ונסו שוב. {detail}","feelsFmt":"מרגיש כמו {temp}°C","highLow":"מקס׳ {hi}° · מינ׳ {lo}°","windFrom":"מכיוון {compass} · {deg}°","updatedModel":"המודל: {time} · שעה מקומית","seaModel":"מודל ימי · {time}","seaUnavailable":"נתוני הים אינם זמינים כרגע","now":"עכשיו","today":"היום","chanceTooltip":"{time} · סיכוי לגשם {pct}%","noData":"אין נתונים","uvLow":"נמוך","uvModerate":"בינוני","uvHigh":"גבוה","uvVeryHigh":"גבוה מאוד","uvExtreme":"קיצוני","variable":"תנאים משתנים"},"en":{"brand":"Netanya Weather","brandSub":"Israel · Mediterranean Coast","refresh":"Refresh","refreshAria":"Refresh weather conditions","loading":"Loading forecast…","localTZ":"Netanya local time","heroAria":"Current weather conditions","heroEyebrow":"Current conditions · Netanya","heroDate":"Today’s weather","loadingShort":"Loading…","feelsEmpty":"Feels like --°","todayRangeEmpty":"High --° · Low --°","sunCaption":"Model-based weather forecast","metricsAria":"Weather indicators","nowSection":"Now in Netanya","hoursSection":"Coming hours","daysSection":"5-day forecast","seaSection":"Mediterranean Sea","metricsSubtitle":"Essential metrics","hoursSubtitle":"Temperature and rain","daysSubtitle":"Lows, highs and rain","seaSubtitle":"Coastal forecast · Netanya","metric_wind":"Wind","metric_humidity":"Relative humidity","metric_pressure":"Air pressure","metric_uv":"UV index","metric_rainChance":"Rain probability","metric_precipTotal":"Forecast precipitation","metric_gust":"Wind gusts","metric_cloudCover":"Cloud cover","windEmpty":"Direction --","humidityNote":"At 2 m above ground","pressureNote":"Reduced to sea level","uvEmpty":"Estimated index","rainNote":"For current hour","precipNote":"Forecast total for today, not measured","gustNote":"Current estimate","cloudNote":"Cloud coverage","hoursAria":"Hourly forecast","daysAria":"Five-day forecast","seaAria":"Sea conditions","trendTitle":"Weather trends","tabsAria":"Forecast range","btn12":"12 hours","btn24":"24 hours","temperatureLegend":"Temperature (°C)","rainLegend":"Rain probability (%)","tempChartAria":"Hourly temperature chart","rainChartAria":"Hourly rain probability chart","hourlyTilesAria":"Hourly weather summary","seaName":"Sea conditions","seaLoading":"Loading marine forecast…","loadingForecast":"Loading forecast…","chartLoading":"Loading…","seaTempLabel":"Sea surface temperature","waveLabel":"Significant wave height","seaNote":"Marine data are estimates from model grid cells near the coast. Significant wave height does not represent the height of every wave. Do not use for navigation, swimming safety decisions, or hazard alerts.","footer":"Data and models: Open-Meteo · Marine API · Netanya (32.3215°N, 34.8532°E) · Automatic refresh every 15 minutes. Current values are model estimates, not local station measurements.","footerLead":"Data and models: ","footerTail":"Netanya (32.3215°N, 34.8532°E) · Auto-refresh every 15 minutes. Data are model forecasts, not readings from a local station.","statusUpdated":"Forecast updated successfully","updating":"Updating data…","updateFailed":"Update failed","parseFailed":"Unable to process weather data: {detail}","apiFailed":"Could not load the forecast. Check your connection and try again. {detail}","feelsFmt":"Feels like {temp}°C","highLow":"High {hi}° · Low {lo}°","windFrom":"From {compass} · {deg}°","updatedModel":"Model: {time} · local time","seaModel":"Marine model · {time}","seaUnavailable":"Marine data are currently unavailable","now":"Now","today":"Today","chanceTooltip":"{time} · {pct}% rain chance","noData":"No data","uvLow":"Low","uvModerate":"Moderate","uvHigh":"High","uvVeryHigh":"Very high","uvExtreme":"Extreme","variable":"Variable conditions"}};
+  let lang = 'he';
+  let weatherData = null, marineData = null, showingHours = 12, loading = false;
+  let statusKey = 'loading', statusBad = false, lastErrorKey = null, lastErrorDetail = '';
+  let marineMode = 'loading';
+  const tr = (key, data={}) => (I18N[lang][key] || key).replace(/\{([a-zA-Z]+)\}/g, (_,k) => data[k] ?? '');
+  const fmt = (n,d=0) => n !== null && n !== undefined && Number.isFinite(Number(n)) ? Number(n).toLocaleString(lang==='he'?'he-IL':'en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false}) : '--';
+  const codes = {
+    0:['בהיר','Clear','☀️'], 1:['בהיר ברובו','Mostly clear','🌤️'], 2:['מעונן חלקית','Partly cloudy','⛅'], 3:['מעונן','Overcast','☁️'],
+    45:['ערפל','Fog','🌫️'], 48:['ערפל קפוא','Freezing fog','🌫️'], 51:['טפטוף קל','Light drizzle','🌦️'], 53:['טפטוף','Drizzle','🌦️'], 55:['טפטוף חזק','Dense drizzle','🌧️'],
+    56:['טפטוף קופא','Freezing drizzle','🌧️'], 57:['טפטוף קופא','Freezing drizzle','🌧️'], 61:['גשם קל','Light rain','🌦️'], 63:['גשם בינוני','Moderate rain','🌧️'], 65:['גשם חזק','Heavy rain','🌧️'],
+    66:['גשם קופא','Freezing rain','🌧️'], 67:['גשם קופא','Freezing rain','🌧️'], 71:['שלג קל','Light snow','🌨️'], 73:['שלג','Snow','🌨️'], 75:['שלג כבד','Heavy snow','❄️'], 77:['גרגרי שלג','Snow grains','❄️'],
+    80:['ממטרים קלים','Light showers','🌦️'], 81:['ממטרים','Rain showers','🌧️'], 82:['ממטרים חזקים','Violent rain showers','🌧️'], 85:['ממטרי שלג','Snow showers','🌨️'], 86:['ממטרי שלג חזקים','Heavy snow showers','🌨️'],
+    95:['סופות רעמים','Thunderstorms','⛈️'], 96:['סופת רעמים וברד','Thunderstorm with hail','⛈️'], 99:['סופת רעמים וברד','Thunderstorm with hail','⛈️']
+  };
+  const getWx = code => { const c=codes[code]; return c ? [c[lang==='he'?0:1],c[2]] : [tr('variable'),'🌤️']; };
+  const value = (id,n,d=0) => $(id).textContent = fmt(n,d);
+  function compass(deg){
+    const i=Math.round((((Number(deg)%360)+360)%360)/45)%8;
+    const names=lang==='he' ? ['צפון','צפון־מזרח','מזרח','דרום־מזרח','דרום','דרום־מערב','מערב','צפון־מערב'] : ['N','NE','E','SE','S','SW','W','NW'];
+    return names[i];
+  }
+  function uvLabel(n){ if(n==null || !Number.isFinite(Number(n))) return tr('noData');
+    return tr(n<3?'uvLow':n<6?'uvModerate':n<8?'uvHigh':n<11?'uvVeryHigh':'uvExtreme'); }
+  const dateName = (iso,opts) => new Intl.DateTimeFormat(lang==='he'?'he-IL':'en-GB',{timeZone:'UTC',...opts}).format(new Date(iso.slice(0,10)+'T12:00:00Z'));
+  function setStatus(key,bad=false){ statusKey=key; statusBad=bad; $('statusText').textContent=tr(key); $('status').classList.toggle('error',bad); }
+  function applyLanguage(next){
+    lang=next==='en'?'en':'he';
+    document.documentElement.lang=lang;
+    document.documentElement.dir=lang==='he'?'rtl':'ltr';
+    document.title=lang==='he'?'מזג האוויר בנתניה | תחזית וים':'Netanya Weather | Forecast & Sea';
+    document.querySelector('meta[name="description"]').content=lang==='he'?'מזג האוויר בנתניה: טמפרטורה, רוח, גשם, תחזית ונתוני ים.':'Netanya weather: temperature, wind, rain, hourly and five-day forecasts, and sea conditions.';
+    document.querySelectorAll('[data-i18n]').forEach(el => el.textContent=tr(el.dataset.i18n));
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label',tr(el.getAttribute('data-i18n-aria-label'))));
+    $('langHe').classList.toggle('active',lang==='he'); $('langEn').classList.toggle('active',lang==='en');
+    $('langHe').setAttribute('aria-pressed',String(lang==='he')); $('langEn').setAttribute('aria-pressed',String(lang==='en'));
+    setStatus(statusKey,statusBad);
+    if(lastErrorKey){ $('errorBox').textContent=tr(lastErrorKey,{detail:lastErrorDetail}); }
+    if(weatherData) renderWeather(weatherData); else { $('updatedAt').textContent=tr('localTZ'); $('feels').textContent=tr('feelsEmpty'); $('todayRange').textContent=tr('todayRangeEmpty'); }
+    renderMarine();
+    try { localStorage.setItem('netanya-weather-lang',lang); } catch(e) { /* preferences unavailable in private/file mode */ }
+  }
+  function indexNow(data) {
+    const key = (data.current?.time || '').slice(0,13);
+    const idx = data.hourly.time.findIndex(t=>t.slice(0,13)===key);
+    return idx < 0 ? 0 : idx;
+  }
+  async function fetchJson(url) {
+    const ctl = new AbortController(); const timer=setTimeout(()=>ctl.abort(),14000);
+    try { const res=await fetch(url,{signal:ctl.signal,cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const obj=await res.json(); if(obj.error) throw new Error(obj.reason || 'API error'); return obj;
+    } finally { clearTimeout(timer); }
+  }
+  function weatherUrl() {
+    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,forecast_days:'6',
+      current:'temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,weather_code,is_day',
+      hourly:'temperature_2m,precipitation_probability,precipitation,weather_code,uv_index',
+      daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max',
+      temperature_unit:'celsius',wind_speed_unit:'kmh',precipitation_unit:'mm'});
+    return 'https://api.open-meteo.com/v1/forecast?'+p;
+  }
+  function seaUrl() {
+    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
+      current:'sea_surface_temperature,wave_height',cell_selection:'sea',forecast_days:'2'});
+    return 'https://marine-api.open-meteo.com/v1/marine?'+p;
+  }
+  function renderWeather(data) {
+    const c=data.current,d=data.daily,h=data.hourly,i=indexNow(data);
+    $('currentTemp').textContent=fmt(c.temperature_2m)+'°'; $('currentTemp').classList.remove('skeleton');
+    const w=getWx(c.weather_code); $('condition').textContent=w[0];
+    $('heroIcon').textContent=c.is_day===0 && c.weather_code===0 ? '🌙' : w[1];
+    $('feels').textContent=tr('feelsFmt',{temp:fmt(c.apparent_temperature)});
+    $('todayRange').textContent=tr('highLow',{hi:fmt(d.temperature_2m_max[0]),lo:fmt(d.temperature_2m_min[0])});
+    $('dateHeader').textContent=dateName(d.time[0],{weekday:'long',day:'numeric',month:'long'});
+    value('wind',c.wind_speed_10m);
+    $('windDirection').textContent=tr('windFrom',{compass:Number.isFinite(c.wind_direction_10m)?compass(c.wind_direction_10m):'--',deg:fmt(c.wind_direction_10m)});
+    value('humidity',c.relative_humidity_2m); value('pressure',c.pressure_msl); value('uv',h.uv_index[i],1);
+    $('uvLevel').textContent=uvLabel(h.uv_index[i]);
+    value('rainChance',h.precipitation_probability[i]); value('rainTotal',d.precipitation_sum[0],1);
+    value('gust',c.wind_gusts_10m); value('cloud',c.cloud_cover);
+    $('days').innerHTML=d.time.slice(0,5).map((day,j)=>{
+      const wx=getWx(d.weather_code[j]);
+      return `<div class="card day-card"><div class="day-name">${j===0?tr('today'):dateName(day,{weekday:'short'})}</div><div class="day-date">${dateName(day,{day:'2-digit',month:'short'})}</div><div class="day-icon" aria-hidden="true">${wx[1]}</div><div class="day-label">${wx[0]}</div><div class="day-temp">${fmt(d.temperature_2m_max[j])}° <span>/ ${fmt(d.temperature_2m_min[j])}°</span></div><div class="day-rain">☂ ${fmt(d.precipitation_probability_max[j])}% · ${fmt(d.precipitation_sum[j],1)} mm</div></div>`;
+    }).join('');
+    weatherData=data; renderHourly();
+    $('updatedAt').textContent=tr('updatedModel',{time:c.time.replace('T',' ')});
+    if(!loading) setStatus('statusUpdated');
+  }
+  function renderHourly() {
+    if(!weatherData) return;
+    const h=weatherData.hourly,start=indexNow(weatherData),n=showingHours;
+    const hours=h.time.slice(start,start+n),temps=h.temperature_2m.slice(start,start+n),rain=h.precipitation_probability.slice(start,start+n);
+    const W=830,left=40,right=16,upper=14,lower=170;
+    const valid=temps.filter(v=>Number.isFinite(v)); if(!valid.length) return;
+    const min=Math.floor(Math.min(...valid)-1),max=Math.ceil(Math.max(...valid)+1),span=Math.max(1,max-min);
+    const x=j=>left+j*(W-left-right)/Math.max(1,temps.length-1);
+    const y=t=>lower-(t-min)/span*(lower-upper);
+    const ticks=[min,(min+max)/2,max];
+    const grid=ticks.map(v=>`<line x1="${left}" y1="${y(v).toFixed(1)}" x2="${W-right}" y2="${y(v).toFixed(1)}" stroke="#dfeaf0" stroke-dasharray="4 5"/><text x="${left-10}" y="${(y(v)+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#79909e">${fmt(v,v%1?1:0)}°</text>`).join('');
+    const points=temps.map((t,j)=>[x(j),y(Number.isFinite(t)?t:min)]);
+    const coords=points.map(([xx,yy])=>`${xx.toFixed(1)},${yy.toFixed(1)}`).join(' ');
+    const area=`${left},${lower} `+coords+` ${x(temps.length-1)},${lower}`;
+    const hourLabels=hours.map((t,j)=>j%(n===12?2:4)===0||j===hours.length-1?`<text x="${x(j).toFixed(1)}" y="198" text-anchor="middle" font-size="12" fill="#79909e">${t.slice(11,13)}h</text>`:'').join('');
+    const dots=points.map(([xx,yy],j)=>`<circle cx="${xx}" cy="${yy}" r="3.5" fill="#1687c2" stroke="white" stroke-width="2"><title>${hours[j].slice(11)} · ${fmt(temps[j],1)}°C</title></circle>`).join('');
+    $('tempChart').innerHTML=`<defs><linearGradient id="tempFade" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#58b7e5" stop-opacity=".26"/><stop offset="100%" stop-color="#58b7e5" stop-opacity=".01"/></linearGradient></defs>${grid}<polygon points="${area}" fill="url(#tempFade)"/><polyline points="${coords}" fill="none" stroke="#1788bf" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>${dots}${hourLabels}`;
+    const bw=Math.max(10,(W-left-right)/hours.length*.57),bh=80,ry=v=>Math.max(0,Math.min(100,Number(v)||0))*bh/100;
+    const bars=rain.map((v,j)=>`<rect x="${(x(j)-bw/2).toFixed(1)}" y="${(91-ry(v)).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(2,ry(v)).toFixed(1)}" rx="3" fill="#86cceb"><title>${tr('chanceTooltip',{time:hours[j].slice(11),pct:fmt(v)})}</title></rect>`).join('');
+    $('rainChart').innerHTML=`<line x1="${left}" y1="91" x2="${W-right}" y2="91" stroke="#dbe7ec"/><text x="${left-10}" y="16" text-anchor="end" font-size="11" fill="#79909e">100%</text><text x="${left-10}" y="94" text-anchor="end" font-size="11" fill="#79909e">0%</text>${bars}`;
+    $('hourlyTiles').innerHTML=hours.map((t,j)=>`<div class="hour-tile"><div class="hour">${j===0?tr('now'):t.slice(11,16)}</div><div class="ico" aria-hidden="true">${getWx(h.weather_code[start+j])[1]}</div><div class="deg">${fmt(temps[j])}°</div><div class="chance">☂ ${fmt(rain[j])}%</div></div>`).join('');
+  }
+  function setHours(num){ showingHours=num; $('btn12').classList.toggle('active',num===12); $('btn24').classList.toggle('active',num===24); $('btn12').setAttribute('aria-pressed',String(num===12)); $('btn24').setAttribute('aria-pressed',String(num===24)); renderHourly(); }
+  function renderMarine(){
+    if(marineMode==='available' && marineData){
+      $('seaTemp').textContent=fmt(marineData.sea_surface_temperature,1)+' °C';
+      $('waveHeight').textContent=fmt(marineData.wave_height,1)+' m';
+      $('marineStatus').textContent=tr('seaModel',{time:marineData.time?.replace('T',' ')||''});
+    } else if(marineMode==='unavailable') {
+      $('marineStatus').textContent=tr('seaUnavailable');
+      if(!marineData) { $('seaTemp').textContent='-- °C'; $('waveHeight').textContent='-- m'; }
+    } else $('marineStatus').textContent=tr('seaLoading');
+  }
+  function showError(key,detail=''){
+    lastErrorKey=key; lastErrorDetail=detail;
+    $('errorBox').textContent=tr(key,{detail}); $('errorBox').classList.add('show'); setStatus('updateFailed',true);
+  }
+  async function update() {
+    if(loading) return; loading=true;
+    $('refreshBtn').disabled=true; setStatus('updating');
+    $('errorBox').classList.remove('show');lastErrorKey=null;
+    const [weather,marine]=await Promise.allSettled([fetchJson(weatherUrl()),fetchJson(seaUrl())]);
+    if(weather.status==='fulfilled'){
+      try { renderWeather(weather.value); setStatus('statusUpdated'); }
+      catch(e) { showError('parseFailed',e.message); }
+    } else showError('apiFailed',weather.reason?.message||'');
+    if(marine.status==='fulfilled' && marine.value?.current){
+      marineData=marine.value.current; marineMode='available';
+    } else marineMode='unavailable';
+    renderMarine(); $('refreshBtn').disabled=false;loading=false;
+  }
+  $('btn12').addEventListener('click',()=>setHours(12));
+  $('btn24').addEventListener('click',()=>setHours(24));
+  $('refreshBtn').addEventListener('click',update);
+  $('langHe').addEventListener('click',()=>applyLanguage('he'));
+  $('langEn').addEventListener('click',()=>applyLanguage('en'));
+  let saved='he';try {saved=localStorage.getItem('netanya-weather-lang')||'he';}catch(e){}
+  const param=new URLSearchParams(location.search).get('lang');
+  applyLanguage(param==='he'||param==='en'?param:saved);
+  update();setInterval(update,15*60*1000);
+})();</script>
+</body>
+</html>
