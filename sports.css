@@ -6,3 +6,5 @@
 .surf-observation-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-top:16px}
 .surf-observation-links a{display:flex;align-items:center;min-height:55px;gap:8px;padding:14px 16px;border-radius:14px;background:#e8f4fa;color:#164a67;border:1px solid #b8d9e8;font-weight:700;text-decoration:none;line-height:1.5;overflow-wrap:anywhere}
 .surf-observation-links a:hover,.surf-observation-links a:focus-visible{background:#d2eaf5;border-color:#57a9cf;text-decoration:underline}
+
+.surf-water-reference{margin:12px 0 6px;font-size:14px}.surf-water-reference a{color:#d4f4ff;font-weight:750;text-decoration:underline;text-underline-offset:3px}.surf-water-reference a:hover{color:#fff}
