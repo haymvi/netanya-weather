@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-16T09:36:15.733Z",
+  "title": "Netanya | Surf, Waves & Wind Forecast",
+  "status": "Marine data: Available\nWind & weather data: Available",
+  "hs": "1.2 m",
+  "period": "7.3 s",
+  "peak": "8.4 s",
+  "wind": "10.7 kn",
+  "water": "27.5 °C",
+  "sources": [
+    "Marine data [M]\n\nOpen-Meteo Marine API · Best Match (automatic model selection). Its documentation lists contributing providers and credits DWD. The API response does not identify the exact contributing model or model-run issue time; neither is invented here.\n\nReturned model grid point\n32.2917° N, 34.7917° E\nSample valid at\n16/10 12:00\nRetrieved\n16/10, 12:36\n\nDocumentation · Open requested API data",
+    "Wind & weather data [W]\n\nOpen-Meteo Forecast API · Best Match. Wind is at 10 m; gust values are preceding-hour maxima. Knots are calculated from the requested km/h using kn = km/h ÷ 1.852. Visibility is converted from metres to kilometres. UV, precipitation and sunrise/sunset come from this same response. [W]\n\nReturned model grid point\n32.3020° N, 34.8496° E\nSample valid at\n16/10 12:00\nRetrieved\n16/10, 12:36\n\nDocumentation · Open requested API data"
+  ],
+  "rows": 24,
+  "responses": [
+    {
+      "url": "https://marine-api.open-meteo.com/v1/marine?latitude=32.3215&longitude=34.8532&timezone=Asia%2FJerusalem&current=sea_surface_temperature%2Cwave_height&hourly=wave_height%2Cwave_direction%2Cwave_period%2Cwave_peak_period%2Cswell_wave_height%2Cswell_wave_direction%2Cswell_wave_period%2Cswell_wave_peak_period%2Cwind_wave_height%2Cwind_wave_direction%2Cwind_wave_period%2Cwind_wave_peak_period%2Csea_surface_temperature&cell_selection=sea&forecast_days=3",
+      "status": 200
+    },
+    {
+      "url": "https://api.open-meteo.com/v1/forecast?latitude=32.3215&longitude=34.8532&timezone=Asia%2FJerusalem&forecast_days=6&current=temperature_2m%2Capparent_temperature%2Crelative_humidity_2m%2Cpressure_msl%2Cwind_speed_10m%2Cwind_direction_10m%2Cwind_gusts_10m%2Ccloud_cover%2Cweather_code%2Cis_day&hourly=temperature_2m%2Cprecipitation_probability%2Cprecipitation%2Cweather_code%2Cuv_index%2Cwind_speed_10m%2Cwind_direction_10m%2Cwind_gusts_10m%2Cvisibility&daily=temperature_2m_max%2Ctemperature_2m_min%2Cweather_code%2Cprecipitation_sum%2Cprecipitation_probability_max%2Csunrise%2Csunset&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
+      "status": 200
+    }
+  ],
+  "jsErrors": [],
+  "note": "One live validation run, not a promise of future API availability or beach conditions."
+}

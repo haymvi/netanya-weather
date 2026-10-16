@@ -1,0 +1,18 @@
+{
+  "expected_url": "https://haymvi.github.io/netanya-weather/",
+  "toolpath_decodes": {
+    "600": [
+      "https://haymvi.github.io/netanya-weather/"
+    ],
+    "300": [
+      "https://haymvi.github.io/netanya-weather/"
+    ],
+    "240": [
+      "https://haymvi.github.io/netanya-weather/"
+    ],
+    "200": [
+      "https://haymvi.github.io/netanya-weather/"
+    ]
+  },
+  "note": "Raster simulation, not a physical scan."
+}

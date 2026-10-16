@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#f5f9fc" name="theme-color"/>
 <meta content="מזג האוויר בנתניה: טמפרטורה, רוח, גשם, תחזית שעתית ולחמישה ימים, טמפרטורת הים וגובה הגלים." name="description"/>
-<title>מזג האוויר בנתניה | תחזית וים</title>
+<title>נתניה | תחזית גלישה, גלים ורוח</title>
 <style>
     :root { color-scheme:light; --ink:#163047; --muted:#647a8a; --bg:#f5f9fc; --paper:#fff; --border:#e5eef4; --blue:#127cbb; --deep:#125b8b; --sun:#f0a143; --danger:#b95050; --radius:22px; }
     * { box-sizing:border-box; }
@@ -124,7 +124,11 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
  html[dir="ltr"] .hero .sun-visual { right:13px; left:auto; }
 }
 @media(max-width:380px){ .brand-name{font-size:17px;} .header-actions{width:100%; justify-content:space-between;} }
+.how-link { display:inline-block; margin:22px 0 0; padding:14px 24px; border-radius:14px; background:#b91c1c; color:white; font-size:16px; font-weight:800; text-decoration:none; box-shadow:0 6px 18px #b91c1c26; }
+    .how-link:hover { background:#991b1b; }
+    .how-link:focus-visible { outline:3px solid #163047; outline-offset:4px; }
 </style>
+<link rel="stylesheet" href="sports.css"/>
 </head>
 <body>
 <div class="wrap">
@@ -135,8 +139,10 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
 <div class="statusbar"><div class="status" id="status"><span class="status-dot"></span><span aria-live="polite" data-i18n="loading" id="statusText" role="status">טוען תחזית…</span></div><div data-i18n="localTZ" id="updatedAt">שעון מקומי · נתניה</div></div>
 <div class="error-box" id="errorBox" role="alert"></div>
 <main>
+<section id="sportsDashboard" aria-label="Netanya surf, wind and marine forecasts"><p>טוען תחזית ים ורוח… / Loading surf and wind forecast…</p></section>
+<details class="weather-details"><summary id="generalWeatherSummary">מזג אוויר כללי</summary>
 <section aria-label="תנאי מזג האוויר כעת" class="hero" data-i18n-aria-label="heroAria">
-<div><div class="eyebrow" data-i18n="heroEyebrow">מזג האוויר כעת · נתניה</div><h1 data-i18n="heroDate" id="dateHeader">מזג האוויר היום</h1>
+<div><div class="eyebrow" data-i18n="heroEyebrow">מזג האוויר כעת · נתניה</div><h2 data-i18n="heroDate" id="dateHeader">מזג האוויר היום</h2>
 <div class="temp-line"><span class="big-temp skeleton" id="currentTemp">--°</span><div class="hero-detail"><span class="sky-label" data-i18n="loadingShort" id="condition">טוען…</span><span class="feels" data-i18n="feelsEmpty" id="feels">טמפרטורה מורגשת --°</span></div></div>
 <div class="hero-day" data-i18n="todayRangeEmpty" id="todayRange">מקס׳ --° · מינ׳ --°</div>
 </div>
@@ -168,23 +174,20 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
 <div class="section-heading"><h2 data-i18n="daysSection">תחזית ל־5 ימים</h2><p data-i18n="daysSubtitle">מינימום, מקסימום וגשם</p></div>
 <div class="days" id="days"><div class="card" data-i18n="loadingForecast">טוען תחזית…</div></div>
 </section>
-<section aria-label="תנאי הים" data-i18n-aria-label="seaAria">
-<div class="section-heading"><h2 data-i18n="seaSection">הים התיכון</h2><p data-i18n="seaSubtitle">תחזית חופית · נתניה</p></div>
-<div class="card sea-panel"><div class="sea-header"><div aria-hidden="true" class="sea-icon">🌊</div><div><div class="sea-name" data-i18n="seaName">תנאי הים</div><div class="sea-sub" data-i18n="seaLoading" id="marineStatus">טוען נתוני הים…</div></div></div><div class="sea-data"><div class="sea-num" id="seaTemp">-- °C</div><div class="sea-caption" data-i18n="seaTempLabel">טמפרטורת פני הים</div></div><div class="sea-data"><div class="sea-num" id="waveHeight">-- m</div><div class="sea-caption" data-i18n="waveLabel">גובה גלים משמעותי</div></div></div>
-<p class="footnote" data-i18n="seaNote">נתוני הים הם הערכות של תאי מודל הסמוכים לחוף. גובה הגלים המשמעותי אינו גובהו של כל גל. אין להשתמש בנתונים לצורך ניווט, קביעת בטיחות רחצה או התרעות סיכון.</p>
-</section>
+
+</details>
 </main>
-<footer><span data-i18n="footerLead">נתונים ומודלים: </span><a href="https://open-meteo.com/" rel="noopener noreferrer" target="_blank">Open-Meteo</a> · <a href="https://open-meteo.com/en/docs/marine-weather-api" rel="noopener noreferrer" target="_blank">Marine API</a> · <span data-i18n="footerTail">נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.</span></footer>
+<footer><span data-i18n="footerLead">נתונים ומודלים: </span><a href="https://open-meteo.com/" rel="noopener noreferrer" target="_blank">Open-Meteo</a> · <a href="https://open-meteo.com/en/docs/marine-weather-api" rel="noopener noreferrer" target="_blank">Marine API</a> · <span data-i18n="footerTail">נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.</span><br/><a class="how-link" id="howLink" href="howto.html?lang=he" data-i18n="howMade">איך זה נוצר</a></footer>
 </div>
+<script src="sports.js"></script>
 <script>(() => {
   'use strict';
   const LAT = 32.3215, LON = 34.8532, TZ = 'Asia/Jerusalem';
   const $ = id => document.getElementById(id);
   const I18N = {"he":{"brand":"מזג האוויר בנתניה","brandSub":"ישראל · חוף הים התיכון","refresh":"רענון","refreshAria":"רענון נתוני מזג האוויר","loading":"טוען תחזית…","localTZ":"שעון מקומי · נתניה","heroAria":"תנאי מזג האוויר כעת","heroEyebrow":"מזג האוויר כעת · נתניה","heroDate":"מזג האוויר היום","loadingShort":"טוען…","feelsEmpty":"טמפרטורה מורגשת --°","todayRangeEmpty":"מקס׳ --° · מינ׳ --°","sunCaption":"תחזית המבוססת על מודלים","metricsAria":"מדדים מטאורולוגיים","nowSection":"עכשיו בנתניה","hoursSection":"השעות הקרובות","daysSection":"תחזית ל־5 ימים","seaSection":"הים התיכון","metricsSubtitle":"נתונים חיוניים","hoursSubtitle":"טמפרטורה וגשם","daysSubtitle":"מינימום, מקסימום וגשם","seaSubtitle":"תחזית חופית · נתניה","metric_wind":"רוח","metric_humidity":"לחות יחסית","metric_pressure":"לחץ אטמוספרי","metric_uv":"מדד קרינה UV","metric_rainChance":"סיכוי לגשם","metric_precipTotal":"משקעים חזויים","metric_gust":"משבי רוח","metric_cloudCover":"עננות","windEmpty":"כיוון --","humidityNote":"בגובה 2 מטרים","pressureNote":"מותאם לגובה פני הים","uvEmpty":"מדד משוער","rainNote":"לשעה הנוכחית","precipNote":"סך החיזוי להיום, לא מדידה","gustNote":"הערכה לעכשיו","cloudNote":"כיסוי עננים","hoursAria":"תחזית לפי שעה","daysAria":"תחזית לחמישה ימים","seaAria":"תנאי הים","trendTitle":"מגמת מזג האוויר","tabsAria":"טווח התחזית","btn12":"12 שעות","btn24":"24 שעות","temperatureLegend":"טמפרטורה (°C)","rainLegend":"סיכוי לגשם (%)","tempChartAria":"גרף טמפרטורה לפי שעה","rainChartAria":"גרף הסתברות לגשם","hourlyTilesAria":"תחזית לפי שעה","seaName":"תנאי הים","seaLoading":"טוען נתוני הים…","loadingForecast":"טוען תחזית…","chartLoading":"טוען…","seaTempLabel":"טמפרטורת פני הים","waveLabel":"גובה גלים משמעותי","seaNote":"נתוני הים הם הערכות של תאי מודל הסמוכים לחוף. גובה הגלים המשמעותי אינו גובהו של כל גל. אין להשתמש בנתונים לצורך ניווט, קביעת בטיחות רחצה או התרעות סיכון.","footer":"נתונים ומודלים: Open-Meteo · Marine API · נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי כל 15 דקות. הנתונים הנוכחיים הם הערכות מודל, ולא מדידות מתחנה מקומית.","footerLead":"נתונים ומודלים: ","footerTail":"נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.","statusUpdated":"התחזית עודכנה בהצלחה","updating":"מעדכן נתונים…","updateFailed":"עדכון הנתונים נכשל","parseFailed":"שגיאה בפענוח נתוני מזג האוויר: {detail}","apiFailed":"לא ניתן לטעון את התחזית. בדקו את החיבור ונסו שוב. {detail}","feelsFmt":"מרגיש כמו {temp}°C","highLow":"מקס׳ {hi}° · מינ׳ {lo}°","windFrom":"מכיוון {compass} · {deg}°","updatedModel":"המודל: {time} · שעה מקומית","seaModel":"מודל ימי · {time}","seaUnavailable":"נתוני הים אינם זמינים כרגע","now":"עכשיו","today":"היום","chanceTooltip":"{time} · סיכוי לגשם {pct}%","noData":"אין נתונים","uvLow":"נמוך","uvModerate":"בינוני","uvHigh":"גבוה","uvVeryHigh":"גבוה מאוד","uvExtreme":"קיצוני","variable":"תנאים משתנים"},"en":{"brand":"Netanya Weather","brandSub":"Israel · Mediterranean Coast","refresh":"Refresh","refreshAria":"Refresh weather conditions","loading":"Loading forecast…","localTZ":"Netanya local time","heroAria":"Current weather conditions","heroEyebrow":"Current conditions · Netanya","heroDate":"Today’s weather","loadingShort":"Loading…","feelsEmpty":"Feels like --°","todayRangeEmpty":"High --° · Low --°","sunCaption":"Model-based weather forecast","metricsAria":"Weather indicators","nowSection":"Now in Netanya","hoursSection":"Coming hours","daysSection":"5-day forecast","seaSection":"Mediterranean Sea","metricsSubtitle":"Essential metrics","hoursSubtitle":"Temperature and rain","daysSubtitle":"Lows, highs and rain","seaSubtitle":"Coastal forecast · Netanya","metric_wind":"Wind","metric_humidity":"Relative humidity","metric_pressure":"Air pressure","metric_uv":"UV index","metric_rainChance":"Rain probability","metric_precipTotal":"Forecast precipitation","metric_gust":"Wind gusts","metric_cloudCover":"Cloud cover","windEmpty":"Direction --","humidityNote":"At 2 m above ground","pressureNote":"Reduced to sea level","uvEmpty":"Estimated index","rainNote":"For current hour","precipNote":"Forecast total for today, not measured","gustNote":"Current estimate","cloudNote":"Cloud coverage","hoursAria":"Hourly forecast","daysAria":"Five-day forecast","seaAria":"Sea conditions","trendTitle":"Weather trends","tabsAria":"Forecast range","btn12":"12 hours","btn24":"24 hours","temperatureLegend":"Temperature (°C)","rainLegend":"Rain probability (%)","tempChartAria":"Hourly temperature chart","rainChartAria":"Hourly rain probability chart","hourlyTilesAria":"Hourly weather summary","seaName":"Sea conditions","seaLoading":"Loading marine forecast…","loadingForecast":"Loading forecast…","chartLoading":"Loading…","seaTempLabel":"Sea surface temperature","waveLabel":"Significant wave height","seaNote":"Marine data are estimates from model grid cells near the coast. Significant wave height does not represent the height of every wave. Do not use for navigation, swimming safety decisions, or hazard alerts.","footer":"Data and models: Open-Meteo · Marine API · Netanya (32.3215°N, 34.8532°E) · Automatic refresh every 15 minutes. Current values are model estimates, not local station measurements.","footerLead":"Data and models: ","footerTail":"Netanya (32.3215°N, 34.8532°E) · Auto-refresh every 15 minutes. Data are model forecasts, not readings from a local station.","statusUpdated":"Forecast updated successfully","updating":"Updating data…","updateFailed":"Update failed","parseFailed":"Unable to process weather data: {detail}","apiFailed":"Could not load the forecast. Check your connection and try again. {detail}","feelsFmt":"Feels like {temp}°C","highLow":"High {hi}° · Low {lo}°","windFrom":"From {compass} · {deg}°","updatedModel":"Model: {time} · local time","seaModel":"Marine model · {time}","seaUnavailable":"Marine data are currently unavailable","now":"Now","today":"Today","chanceTooltip":"{time} · {pct}% rain chance","noData":"No data","uvLow":"Low","uvModerate":"Moderate","uvHigh":"High","uvVeryHigh":"Very high","uvExtreme":"Extreme","variable":"Variable conditions"}};
   let lang = 'he';
-  let weatherData = null, marineData = null, showingHours = 12, loading = false;
+  let weatherData = null, showingHours = 12, loading = false;
   let statusKey = 'loading', statusBad = false, lastErrorKey = null, lastErrorDetail = '';
-  let marineMode = 'loading';
   const tr = (key, data={}) => (I18N[lang][key] || key).replace(/\{([a-zA-Z]+)\}/g, (_,k) => data[k] ?? '');
   const fmt = (n,d=0) => n !== null && n !== undefined && Number.isFinite(Number(n)) ? Number(n).toLocaleString(lang==='he'?'he-IL':'en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false}) : '--';
   const codes = {
@@ -202,6 +205,9 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     const names=lang==='he' ? ['צפון','צפון־מזרח','מזרח','דרום־מזרח','דרום','דרום־מערב','מערב','צפון־מערב'] : ['N','NE','E','SE','S','SW','W','NW'];
     return names[i];
   }
+  Object.assign(I18N.en,{brand:'Netanya · Surf & Wind',brandSub:'Surf · Windsurf · Kitesurf',updatedModel:'Weather forecast valid: {time} · Netanya time',statusUpdated:'Weather loaded · marine status shown separately'});
+  Object.assign(I18N.he,{brand:'נתניה · גלישה ורוח',brandSub:'גלישת גלים · רוח · קייט',updatedModel:'תוקף תחזית מזג האוויר: {time} · זמן נתניה',statusUpdated:'מזג האוויר נטען · מצב הים מוצג בנפרד'});
+  I18N.he.howMade='איך זה נוצר'; I18N.en.howMade='How this was made';
   function uvLabel(n){ if(n==null || !Number.isFinite(Number(n))) return tr('noData');
     return tr(n<3?'uvLow':n<6?'uvModerate':n<8?'uvHigh':n<11?'uvVeryHigh':'uvExtreme'); }
   const dateName = (iso,opts) => new Intl.DateTimeFormat(lang==='he'?'he-IL':'en-GB',{timeZone:'UTC',...opts}).format(new Date(iso.slice(0,10)+'T12:00:00Z'));
@@ -209,9 +215,10 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
   function applyLanguage(next){
     lang=next==='en'?'en':'he';
     document.documentElement.lang=lang;
+    $('howLink').href='howto.html?lang='+lang;
     document.documentElement.dir=lang==='he'?'rtl':'ltr';
-    document.title=lang==='he'?'מזג האוויר בנתניה | תחזית וים':'Netanya Weather | Forecast & Sea';
-    document.querySelector('meta[name="description"]').content=lang==='he'?'מזג האוויר בנתניה: טמפרטורה, רוח, גשם, תחזית ונתוני ים.':'Netanya weather: temperature, wind, rain, hourly and five-day forecasts, and sea conditions.';
+    document.title=lang==='he'?'נתניה | תחזית גלישה, גלים ורוח':'Netanya | Surf, Waves & Wind Forecast';
+    document.querySelector('meta[name="description"]').content=lang==='he'?'תחזית גלישה לנתניה: גובה, מחזור וכיוון גלים, סוואל, רוח ומשבים, טמפרטורת ים ומקורות הנתונים.':'Netanya surf forecast: wave height, period and direction, swell, wind and gusts, sea temperature and cited data sources.';
     document.querySelectorAll('[data-i18n]').forEach(el => el.textContent=tr(el.dataset.i18n));
     document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label',tr(el.getAttribute('data-i18n-aria-label'))));
     $('langHe').classList.toggle('active',lang==='he'); $('langEn').classList.toggle('active',lang==='en');
@@ -237,14 +244,16 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
   function weatherUrl() {
     const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,forecast_days:'6',
       current:'temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,weather_code,is_day',
-      hourly:'temperature_2m,precipitation_probability,precipitation,weather_code,uv_index',
-      daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max',
+      hourly:'temperature_2m,precipitation_probability,precipitation,weather_code,uv_index,wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility',
+      daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max,sunrise,sunset',
       temperature_unit:'celsius',wind_speed_unit:'kmh',precipitation_unit:'mm'});
     return 'https://api.open-meteo.com/v1/forecast?'+p;
   }
   function seaUrl() {
     const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
-      current:'sea_surface_temperature,wave_height',cell_selection:'sea',forecast_days:'2'});
+      current:'sea_surface_temperature,wave_height',
+      hourly:'wave_height,wave_direction,wave_period,wave_peak_period,swell_wave_height,swell_wave_direction,swell_wave_period,swell_wave_peak_period,wind_wave_height,wind_wave_direction,wind_wave_period,wind_wave_peak_period,sea_surface_temperature',
+      cell_selection:'sea',forecast_days:'3'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function renderWeather(data) {
@@ -292,16 +301,7 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     $('hourlyTiles').innerHTML=hours.map((t,j)=>`<div class="hour-tile"><div class="hour">${j===0?tr('now'):t.slice(11,16)}</div><div class="ico" aria-hidden="true">${getWx(h.weather_code[start+j])[1]}</div><div class="deg">${fmt(temps[j])}°</div><div class="chance">☂ ${fmt(rain[j])}%</div></div>`).join('');
   }
   function setHours(num){ showingHours=num; $('btn12').classList.toggle('active',num===12); $('btn24').classList.toggle('active',num===24); $('btn12').setAttribute('aria-pressed',String(num===12)); $('btn24').setAttribute('aria-pressed',String(num===24)); renderHourly(); }
-  function renderMarine(){
-    if(marineMode==='available' && marineData){
-      $('seaTemp').textContent=fmt(marineData.sea_surface_temperature,1)+' °C';
-      $('waveHeight').textContent=fmt(marineData.wave_height,1)+' m';
-      $('marineStatus').textContent=tr('seaModel',{time:marineData.time?.replace('T',' ')||''});
-    } else if(marineMode==='unavailable') {
-      $('marineStatus').textContent=tr('seaUnavailable');
-      if(!marineData) { $('seaTemp').textContent='-- °C'; $('waveHeight').textContent='-- m'; }
-    } else $('marineStatus').textContent=tr('seaLoading');
-  }
+  function renderMarine(){ window.SurfDashboard?.setLanguage(lang); }
   function showError(key,detail=''){
     lastErrorKey=key; lastErrorDetail=detail;
     $('errorBox').textContent=tr(key,{detail}); $('errorBox').classList.add('show'); setStatus('updateFailed',true);
@@ -309,15 +309,15 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
   async function update() {
     if(loading) return; loading=true;
     $('refreshBtn').disabled=true; setStatus('updating');
+    window.SurfDashboard?.setUrls(weatherUrl(),seaUrl());
+    window.SurfDashboard?.loading();
     $('errorBox').classList.remove('show');lastErrorKey=null;
     const [weather,marine]=await Promise.allSettled([fetchJson(weatherUrl()),fetchJson(seaUrl())]);
     if(weather.status==='fulfilled'){
-      try { renderWeather(weather.value); setStatus('statusUpdated'); }
-      catch(e) { showError('parseFailed',e.message); }
-    } else showError('apiFailed',weather.reason?.message||'');
-    if(marine.status==='fulfilled' && marine.value?.current){
-      marineData=marine.value.current; marineMode='available';
-    } else marineMode='unavailable';
+      try { renderWeather(weather.value); setStatus('statusUpdated'); window.SurfDashboard?.result('weather',weather.value); }
+      catch(e) { showError('parseFailed',e.message); window.SurfDashboard?.result('weather',null); }
+    } else { showError('apiFailed',weather.reason?.message||''); window.SurfDashboard?.result('weather',null); }
+    window.SurfDashboard?.result('marine',marine.status==='fulfilled'?marine.value:null);
     renderMarine(); $('refreshBtn').disabled=false;loading=false;
   }
   $('btn12').addEventListener('click',()=>setHours(12));

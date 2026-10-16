@@ -1,0 +1,56 @@
+{
+  "layers": {
+    "0.2": [
+      0
+    ],
+    "0.4": [
+      0
+    ],
+    "0.6": [
+      0
+    ],
+    "0.8": [
+      0
+    ],
+    "1.0": [
+      0
+    ],
+    "1.2": [
+      0
+    ],
+    "1.4": [
+      1
+    ],
+    "1.6": [
+      1
+    ],
+    "1.8": [
+      1
+    ],
+    "2.0": [
+      1
+    ],
+    "2.2": [
+      1
+    ]
+  },
+  "tool_selections": [
+    [
+      0,
+      0
+    ],
+    [
+      1.4,
+      1
+    ]
+  ],
+  "sha256": "fd97f18165b7d809a4d5b93ee635563999ad62e3d08b4a2705a1e949406cca06",
+  "statistics": [
+    "; filament used [g] = 3.83, 0.79",
+    "; total filament used [g] = 4.62",
+    "; total filament change = 1",
+    "; estimated printing time (normal mode) = 30m 24s"
+  ],
+  "validation": "Digital checks only; physical printing and IFS mapping must be verified on the printer.",
+  "preset": "conservative"
+}
