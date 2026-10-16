@@ -253,14 +253,20 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
   function seaUrl() {
     const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
       current:'wave_height',
-      hourly:'wave_height,wave_direction,wave_period,wave_peak_period,swell_wave_height,swell_wave_direction,swell_wave_period,swell_wave_peak_period,wind_wave_height,wind_wave_direction,wind_wave_period,wind_wave_peak_period',
+      hourly:'wave_height,wave_direction,wave_period,wave_peak_period,swell_wave_height,swell_wave_direction,swell_wave_period,swell_wave_peak_period,wind_wave_height,wind_wave_direction,wind_wave_period,wind_wave_peak_period,secondary_swell_wave_height,secondary_swell_wave_direction,secondary_swell_wave_period',
       cell_selection:'sea',forecast_days:'3'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function sstUrl() {
     const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
       current:'sea_surface_temperature',hourly:'sea_surface_temperature',
-      cell_selection:'sea',forecast_days:'3',models:'meteofrance_currents'});
+      cell_selection:'sea',forecast_days:'3'});
+    return 'https://marine-api.open-meteo.com/v1/marine?'+p;
+  }
+  function coastalUrl() {
+    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
+      hourly:'ocean_current_velocity,ocean_current_direction,sea_level_height_msl',
+      cell_selection:'sea',forecast_days:'3'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function renderWeather(data) {
@@ -316,16 +322,17 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
   async function update() {
     if(loading) return; loading=true; lastUpdateAt=Date.now();
     $('refreshBtn').disabled=true; setStatus('updating');
-    window.SurfDashboard?.setUrls(weatherUrl(),seaUrl(),sstUrl());
+    window.SurfDashboard?.setUrls(weatherUrl(),seaUrl(),sstUrl(),coastalUrl());
     window.SurfDashboard?.loading();
     $('errorBox').classList.remove('show');lastErrorKey=null;
-    const [weather,marine,sst]=await Promise.allSettled([fetchJson(weatherUrl()),fetchJson(seaUrl()),fetchJson(sstUrl())]);
+    const [weather,marine,sst,coastal]=await Promise.allSettled([fetchJson(weatherUrl()),fetchJson(seaUrl()),fetchJson(sstUrl()),fetchJson(coastalUrl())]);
     if(weather.status==='fulfilled'){
       try { renderWeather(weather.value); setStatus('statusUpdated'); window.SurfDashboard?.result('weather',weather.value); }
       catch(e) { showError('parseFailed',e.message); window.SurfDashboard?.result('weather',null); }
     } else { showError('apiFailed',weather.reason?.message||''); window.SurfDashboard?.result('weather',null); }
-    window.SurfDashboard?.result('marine',marine.status==='fulfilled'?marine.value:null);
-    window.SurfDashboard?.result('sst',sst.status==='fulfilled'?sst.value:null);
+    window.SurfDashboard?.result('marine',marine.status==='fulfilled'?marine.value:null,marine.status==='rejected'?(marine.reason?.message||'Network error'):'');
+    window.SurfDashboard?.result('sst',sst.status==='fulfilled'?sst.value:null,sst.status==='rejected'?(sst.reason?.message||'Network error'):'');
+    window.SurfDashboard?.result('coastal',coastal.status==='fulfilled'?coastal.value:null,coastal.status==='rejected'?(coastal.reason?.message||'Network error'):'');
     renderMarine(); $('refreshBtn').disabled=false;loading=false;
   }
   $('btn12').addEventListener('click',()=>setHours(12));
