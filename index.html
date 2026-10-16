@@ -183,6 +183,8 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
 <script>(() => {
   'use strict';
   const LAT = 32.3215, LON = 34.8532, TZ = 'Asia/Jerusalem';
+  // Forecast wind over Netanya; marine grid sample is approximately 5 km offshore.
+  const SEA_LAT = 32.33, SEA_LON = 34.80;
   const $ = id => document.getElementById(id);
   const I18N = {"he":{"brand":"מזג האוויר בנתניה","brandSub":"ישראל · חוף הים התיכון","refresh":"רענון","refreshAria":"רענון נתוני מזג האוויר","loading":"טוען תחזית…","localTZ":"שעון מקומי · נתניה","heroAria":"תנאי מזג האוויר כעת","heroEyebrow":"מזג האוויר כעת · נתניה","heroDate":"מזג האוויר היום","loadingShort":"טוען…","feelsEmpty":"טמפרטורה מורגשת --°","todayRangeEmpty":"מקס׳ --° · מינ׳ --°","sunCaption":"תחזית המבוססת על מודלים","metricsAria":"מדדים מטאורולוגיים","nowSection":"עכשיו בנתניה","hoursSection":"השעות הקרובות","daysSection":"תחזית ל־5 ימים","seaSection":"הים התיכון","metricsSubtitle":"נתונים חיוניים","hoursSubtitle":"טמפרטורה וגשם","daysSubtitle":"מינימום, מקסימום וגשם","seaSubtitle":"תחזית חופית · נתניה","metric_wind":"רוח","metric_humidity":"לחות יחסית","metric_pressure":"לחץ אטמוספרי","metric_uv":"מדד קרינה UV","metric_rainChance":"סיכוי לגשם","metric_precipTotal":"משקעים חזויים","metric_gust":"משבי רוח","metric_cloudCover":"עננות","windEmpty":"כיוון --","humidityNote":"בגובה 2 מטרים","pressureNote":"מותאם לגובה פני הים","uvEmpty":"מדד משוער","rainNote":"לשעה הנוכחית","precipNote":"סך החיזוי להיום, לא מדידה","gustNote":"הערכה לעכשיו","cloudNote":"כיסוי עננים","hoursAria":"תחזית לפי שעה","daysAria":"תחזית לחמישה ימים","seaAria":"תנאי הים","trendTitle":"מגמת מזג האוויר","tabsAria":"טווח התחזית","btn12":"12 שעות","btn24":"24 שעות","temperatureLegend":"טמפרטורה (°C)","rainLegend":"סיכוי לגשם (%)","tempChartAria":"גרף טמפרטורה לפי שעה","rainChartAria":"גרף הסתברות לגשם","hourlyTilesAria":"תחזית לפי שעה","seaName":"תנאי הים","seaLoading":"טוען נתוני הים…","loadingForecast":"טוען תחזית…","chartLoading":"טוען…","seaTempLabel":"טמפרטורת פני הים","waveLabel":"גובה גלים משמעותי","seaNote":"נתוני הים הם הערכות של תאי מודל הסמוכים לחוף. גובה הגלים המשמעותי אינו גובהו של כל גל. אין להשתמש בנתונים לצורך ניווט, קביעת בטיחות רחצה או התרעות סיכון.","footer":"נתונים ומודלים: Open-Meteo · Marine API · נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי כל 15 דקות. הנתונים הנוכחיים הם הערכות מודל, ולא מדידות מתחנה מקומית.","footerLead":"נתונים ומודלים: ","footerTail":"נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.","statusUpdated":"התחזית עודכנה בהצלחה","updating":"מעדכן נתונים…","updateFailed":"עדכון הנתונים נכשל","parseFailed":"שגיאה בפענוח נתוני מזג האוויר: {detail}","apiFailed":"לא ניתן לטעון את התחזית. בדקו את החיבור ונסו שוב. {detail}","feelsFmt":"מרגיש כמו {temp}°C","highLow":"מקס׳ {hi}° · מינ׳ {lo}°","windFrom":"מכיוון {compass} · {deg}°","updatedModel":"המודל: {time} · שעה מקומית","seaModel":"מודל ימי · {time}","seaUnavailable":"נתוני הים אינם זמינים כרגע","now":"עכשיו","today":"היום","chanceTooltip":"{time} · סיכוי לגשם {pct}%","noData":"אין נתונים","uvLow":"נמוך","uvModerate":"בינוני","uvHigh":"גבוה","uvVeryHigh":"גבוה מאוד","uvExtreme":"קיצוני","variable":"תנאים משתנים"},"en":{"brand":"Netanya Weather","brandSub":"Israel · Mediterranean Coast","refresh":"Refresh","refreshAria":"Refresh weather conditions","loading":"Loading forecast…","localTZ":"Netanya local time","heroAria":"Current weather conditions","heroEyebrow":"Current conditions · Netanya","heroDate":"Today’s weather","loadingShort":"Loading…","feelsEmpty":"Feels like --°","todayRangeEmpty":"High --° · Low --°","sunCaption":"Model-based weather forecast","metricsAria":"Weather indicators","nowSection":"Now in Netanya","hoursSection":"Coming hours","daysSection":"5-day forecast","seaSection":"Mediterranean Sea","metricsSubtitle":"Essential metrics","hoursSubtitle":"Temperature and rain","daysSubtitle":"Lows, highs and rain","seaSubtitle":"Coastal forecast · Netanya","metric_wind":"Wind","metric_humidity":"Relative humidity","metric_pressure":"Air pressure","metric_uv":"UV index","metric_rainChance":"Rain probability","metric_precipTotal":"Forecast precipitation","metric_gust":"Wind gusts","metric_cloudCover":"Cloud cover","windEmpty":"Direction --","humidityNote":"At 2 m above ground","pressureNote":"Reduced to sea level","uvEmpty":"Estimated index","rainNote":"For current hour","precipNote":"Forecast total for today, not measured","gustNote":"Current estimate","cloudNote":"Cloud coverage","hoursAria":"Hourly forecast","daysAria":"Five-day forecast","seaAria":"Sea conditions","trendTitle":"Weather trends","tabsAria":"Forecast range","btn12":"12 hours","btn24":"24 hours","temperatureLegend":"Temperature (°C)","rainLegend":"Rain probability (%)","tempChartAria":"Hourly temperature chart","rainChartAria":"Hourly rain probability chart","hourlyTilesAria":"Hourly weather summary","seaName":"Sea conditions","seaLoading":"Loading marine forecast…","loadingForecast":"Loading forecast…","chartLoading":"Loading…","seaTempLabel":"Sea surface temperature","waveLabel":"Significant wave height","seaNote":"Marine data are estimates from model grid cells near the coast. Significant wave height does not represent the height of every wave. Do not use for navigation, swimming safety decisions, or hazard alerts.","footer":"Data and models: Open-Meteo · Marine API · Netanya (32.3215°N, 34.8532°E) · Automatic refresh every 15 minutes. Current values are model estimates, not local station measurements.","footerLead":"Data and models: ","footerTail":"Netanya (32.3215°N, 34.8532°E) · Auto-refresh every 15 minutes. Data are model forecasts, not readings from a local station.","statusUpdated":"Forecast updated successfully","updating":"Updating data…","updateFailed":"Update failed","parseFailed":"Unable to process weather data: {detail}","apiFailed":"Could not load the forecast. Check your connection and try again. {detail}","feelsFmt":"Feels like {temp}°C","highLow":"High {hi}° · Low {lo}°","windFrom":"From {compass} · {deg}°","updatedModel":"Model: {time} · local time","seaModel":"Marine model · {time}","seaUnavailable":"Marine data are currently unavailable","now":"Now","today":"Today","chanceTooltip":"{time} · {pct}% rain chance","noData":"No data","uvLow":"Low","uvModerate":"Moderate","uvHigh":"High","uvVeryHigh":"Very high","uvExtreme":"Extreme","variable":"Variable conditions"}};
   let lang = 'he';
@@ -243,7 +245,7 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     } finally { clearTimeout(timer); }
   }
   function weatherUrl() {
-    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,forecast_days:'6',
+    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,forecast_days:'7',
       current:'temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,weather_code,is_day',
       hourly:'temperature_2m,precipitation_probability,precipitation,weather_code,uv_index,wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility',
       daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max,sunrise,sunset',
@@ -251,22 +253,23 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     return 'https://api.open-meteo.com/v1/forecast?'+p;
   }
   function seaUrl() {
-    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
+    const p=new URLSearchParams({latitude:SEA_LAT,longitude:SEA_LON,timezone:TZ,
       current:'wave_height',
       hourly:'wave_height,wave_direction,wave_period,wave_peak_period,swell_wave_height,swell_wave_direction,swell_wave_period,swell_wave_peak_period,wind_wave_height,wind_wave_direction,wind_wave_period,wind_wave_peak_period,secondary_swell_wave_height,secondary_swell_wave_direction,secondary_swell_wave_period',
-      cell_selection:'sea',forecast_days:'3'});
+      daily:'wave_height_max,wave_period_max,swell_wave_height_max,swell_wave_period_max,wind_wave_height_max',
+      cell_selection:'sea',forecast_days:'7'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function sstUrl() {
-    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
+    const p=new URLSearchParams({latitude:SEA_LAT,longitude:SEA_LON,timezone:TZ,
       current:'sea_surface_temperature',hourly:'sea_surface_temperature',
-      cell_selection:'sea',forecast_days:'3'});
+      cell_selection:'sea',forecast_days:'7'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function coastalUrl() {
-    const p=new URLSearchParams({latitude:LAT,longitude:LON,timezone:TZ,
+    const p=new URLSearchParams({latitude:SEA_LAT,longitude:SEA_LON,timezone:TZ,
       hourly:'ocean_current_velocity,ocean_current_direction,sea_level_height_msl',
-      cell_selection:'sea',forecast_days:'3'});
+      cell_selection:'sea',forecast_days:'7'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function renderWeather(data) {
