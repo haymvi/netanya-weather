@@ -128,7 +128,7 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     .how-link:hover { background:#991b1b; }
     .how-link:focus-visible { outline:3px solid #163047; outline-offset:4px; }
 </style>
-<link rel="stylesheet" href="sports.css?v=20261016-sst2"/>
+<link rel="stylesheet" href="sports.css?v=20261016-hadera6"/>
 </head>
 <body>
 <div class="wrap">
@@ -179,7 +179,7 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
 </main>
 <footer><span data-i18n="footerLead">נתונים ומודלים: </span><a href="https://open-meteo.com/" rel="noopener noreferrer" target="_blank">Open-Meteo</a> · <a href="https://www.dwd.de/EN/Home/home_node.html" rel="noopener noreferrer" target="_blank">DWD</a> · <a href="https://open-meteo.com/en/docs/marine-weather-api" rel="noopener noreferrer" target="_blank">Marine API</a> · <span data-i18n="footerTail">נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.</span><br/><a class="how-link" id="howLink" href="howto.html?lang=he" data-i18n="howMade">איך זה נוצר</a></footer>
 </div>
-<script src="sports.js?v=20261016-sstfix4"></script>
+<script src="sports.js?v=20261016-hadera6"></script>
 <script>(() => {
   'use strict';
   const LAT = 32.3215, LON = 34.8532, TZ = 'Asia/Jerusalem';
@@ -271,9 +271,19 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
   function hasSstValue(data){
+    // A non-null forecast next week must not be presented as today's SST.
     const isTemp=v=>typeof v==='number'&&Number.isFinite(v)&&v>=-2&&v<=45;
-    return isTemp(data?.current?.sea_surface_temperature) ||
-      (Array.isArray(data?.hourly?.sea_surface_temperature)&&data.hourly.sea_surface_temperature.some(isTemp));
+    const parts=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,
+      year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+    const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+    const target=Date.parse(p.year+'-'+p.month+'-'+p.day+'T'+p.hour+':00:00Z');
+    function near(time){
+      return typeof time==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(time) &&
+        Math.abs(Date.parse(time+':00Z')-target)<=12*3600000;
+    }
+    if(isTemp(data?.current?.sea_surface_temperature)&&near(data?.current?.time))return true;
+    const ts=data?.hourly?.time||[],temps=data?.hourly?.sea_surface_temperature||[];
+    return ts.some((time,i)=>near(time)&&isTemp(temps[i]));
   }
   async function fetchSstWithFallback(){
     const attempts=[
