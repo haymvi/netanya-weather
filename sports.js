@@ -1,8 +1,8 @@
 /* Netanya sports forecast. Model output, not observations or a surf/safety score. */
 (() => {
   'use strict';
-  const state = { lang: 'he', sport: 'surf', hours: 24, weather: null, marine: null, sst: null,
-    weatherStatus: 'loading', marineStatus: 'loading', sstStatus: 'loading', weatherFetched: null, marineFetched: null, sstFetched: null, urls: {} };
+  const state = { lang: 'he', sport: 'surf', hours: 24, weather: null, marine: null, sst: null, coastal: null,
+    weatherStatus: 'loading', marineStatus: 'loading', sstStatus: 'loading', coastalStatus: 'loading', weatherFetched: null, marineFetched: null, sstFetched: null, coastalFetched: null, errors: {}, urls: {} };
   const copy = {
     en: {
       title: 'Netanya · Surf & Wind', sub: 'Surf first. Swell, wind sea and wind forecasts for Netanya, Israel.',
@@ -19,7 +19,7 @@
       hourly: 'Hourly surf & wind forecast', h24: '24 hours', h48: '48 hours', tableHint: 'Scroll horizontally for all columns. Every timestamp is local to Netanya. “—” means missing model data, not zero.',
       time: 'Time', waveCol: 'Waves: m / s / from', swellCol: 'Swell: m / peak s', windCol: 'Wind: kn · km/h', gustCol: 'Gust: kn · km/h', windDir: 'Wind from', tempCol: 'Model water / air: °C', uvRain: 'UV / rain chance',
       extra: 'Air, daylight & exposure', air: 'Air temperature', daylight: 'Sunrise / sunset', uv: 'UV index', rain: 'Rain probability / precipitation', visibility: 'Visibility',
-      sources: 'Sources, location & what this page can tell you', seaSource: 'Marine data', weatherSource: 'Wind & weather data', sstSource: 'Water temperature model', modelSst: 'No local measurement is integrated. Météo-France ocean-model estimate via Open-Meteo; not an independently verified beach reading.', distance: 'Distance from Netanya reference', sstNote: 'Water temperature comes from a separate request explicitly selecting the Météo-France ocean model. It is not a thermometer reading in Netanya. A full day can contain the same model value; a 15-minute refresh does not create a new measurement.', sourceSst: 'Météo-France ocean model via Open-Meteo, explicitly selected with models=meteofrance_currents. This is modelled sea-surface temperature on an approximately 8 km grid, not a local coastal sensor. No independent local observation is integrated; the displayed number must not be presented as a verified beach measurement.', docs: 'Documentation', raw: 'Open requested API data', selected: 'Returned model grid point', requested: 'Requested Netanya reference point', fetched: 'Retrieved', valid: 'Sample valid at',
+      sources: 'Sources, location & what this page can tell you', seaSource: 'Marine data', weatherSource: 'Wind & weather data', sstSource: 'Water temperature model', modelSst: 'No local measurement is integrated. Open-Meteo sea-surface-temperature model estimate; not a verified beach reading.', distance: 'Distance from Netanya reference', sstNote: 'Water temperature comes from a separate Open-Meteo Marine request using automatic Best Match selection. It is not a thermometer reading in Netanya. A full day can contain the same model value; a 15-minute refresh does not create a new measurement.', sourceSst: 'Open-Meteo Marine API Best Match sea-surface temperature. The exact model selected is not identified in the response; it is a forecast, not a beach thermometer. No independent local observation is integrated; the displayed number must not be presented as a verified beach measurement.', docs: 'Documentation', raw: 'Open requested API data', selected: 'Returned model grid point', requested: 'Requested Netanya reference point', fetched: 'Retrieved', valid: 'Sample valid at',
       sourceModel: 'Open-Meteo Marine API · Best Match (automatic model selection). Its documentation lists contributing providers and credits DWD. The API response does not identify the exact contributing model or model-run issue time; neither is invented here.',
       sourceWeather: 'Open-Meteo Forecast API · Best Match. Wind is at 10 m; gust values are preceding-hour maxima. Knots are calculated from the requested km/h using kn = km/h ÷ 1.852. Visibility is converted from metres to kilometres. UV, precipitation and sunrise/sunset come from this same response. [W]',
       locationNote: 'This is a reference point for Netanya, not a named surf break. The marine request selects a sea grid cell; the returned coordinates can differ from the requested coordinates. Coastal bathymetry, sandbars, shelter, water quality, access restrictions and rip currents are not resolved by this page. No onshore/offshore label is assigned without a verified launch orientation.',
@@ -47,7 +47,7 @@
       hourly: 'תחזית שעתית לגלים ולרוח', h24: '24 שעות', h48: '48 שעות', tableHint: 'אפשר לגלול לצדדים לכל העמודות. כל הזמנים הם זמני נתניה. ״—״ מציין נתון חסר, ולא אפס.',
       time: 'שעה', waveCol: 'גלים: מ׳ / שנ׳ / מכיוון', swellCol: 'סוואל: מ׳ / שנ׳ שיא', windCol: 'רוח: קשר · קמ״ש', gustCol: 'משב: קשר · קמ״ש', windDir: 'הרוח מכיוון', tempCol: 'מים במודל / אוויר: °C', uvRain: 'UV / סיכוי לגשם',
       extra: 'אוויר, אור יום וחשיפה', air: 'טמפרטורת האוויר', daylight: 'זריחה / שקיעה', uv: 'מדד UV', rain: 'סיכוי לגשם / משקעים', visibility: 'ראות',
-      sources: 'מקורות, מיקום וגבולות המידע', seaSource: 'נתוני ים', weatherSource: 'נתוני רוח ומזג אוויר', sstSource: 'מודל טמפרטורת מים', modelSst: 'לא משולבת מדידה מקומית. הערכת מודל ימי של Météo-France דרך Open-Meteo; לא מדידת חוף שאומתה באופן עצמאי.', distance: 'מרחק מנקודת הייחוס בנתניה', sstNote: 'טמפרטורת המים מגיעה מבקשה נפרדת עם בחירה מפורשת במודל הימי של Météo-France. זו אינה מדידת מדחום בנתניה. אותו ערך עשוי להופיע יום שלם; עדכון כל 15 דקות אינו יוצר מדידה חדשה.', sourceSst: 'המודל הימי של Météo-France דרך Open-Meteo, בבחירה מפורשת models=meteofrance_currents. זו טמפרטורת פני ים ממודל ברשת של כ־8 ק״מ, לא חיישן חופי מקומי. לא משולבת תצפית מקומית עצמאית; אין להציג את המספר כמדידת חוף מאומתת.', docs: 'תיעוד', raw: 'פתיחת נתוני ה־API שהתבקשו', selected: 'נקודת רשת המודל שהוחזרה', requested: 'נקודת הייחוס המבוקשת בנתניה', fetched: 'מועד השליפה', valid: 'מועד תוקף הנתון',
+      sources: 'מקורות, מיקום וגבולות המידע', seaSource: 'נתוני ים', weatherSource: 'נתוני רוח ומזג אוויר', sstSource: 'מודל טמפרטורת מים', modelSst: 'אין מדידה מקומית מחוברת. הערכת מודל טמפרטורת פני ים של Open-Meteo, לא מדידת חוף מאומתת.', distance: 'מרחק מנקודת הייחוס בנתניה', sstNote: 'טמפרטורת המים מגיעה מבקשה נפרדת ל־Open-Meteo בבחירת מודל אוטומטית. זו אינה מדידת מדחום בנתניה. אותו ערך עשוי להופיע יום שלם; עדכון כל 15 דקות אינו יוצר מדידה חדשה.', sourceSst: 'טמפרטורת פני הים היא הערכת מודל Open-Meteo בבחירה אוטומטית. תשובת ה־API אינה מזהה את המודל המדויק. אין חיישן חוף מקומי מחובר. לא משולבת תצפית מקומית עצמאית; אין להציג את המספר כמדידת חוף מאומתת.', docs: 'תיעוד', raw: 'פתיחת נתוני ה־API שהתבקשו', selected: 'נקודת רשת המודל שהוחזרה', requested: 'נקודת הייחוס המבוקשת בנתניה', fetched: 'מועד השליפה', valid: 'מועד תוקף הנתון',
       sourceModel: 'Open-Meteo Marine API · Best Match — בחירת מודלים אוטומטית. התיעוד מפרט ספקי מודלים ונותן קרדיט ל־DWD. תשובת ה־API אינה מזהה את המודל המדויק שתרם כל ערך או את מועד הרצת המודל; אין להמציא אותם.',
       sourceWeather: 'Open-Meteo Forecast API · Best Match. רוח בגובה 10 מטר; משבים הם מרב השעה הקודמת. קשרים מחושבים מקמ״ש באמצעות חלוקה ב־1.852. ראות מומרת ממטרים לקילומטרים. UV, משקעים וזריחה/שקיעה מגיעים מאותה תשובה. [W]',
       locationNote: 'זו נקודת ייחוס לנתניה, ולא ספוט גלישה מסוים. הבקשה הימית בוחרת תא רשת בים; הקואורדינטות שהוחזרו עשויות להיות שונות מהמבוקשות. עומק מקומי, שרטונות, מחסה, איכות מים, מגבלות כניסה וזרמי סחף אינם נפתרים בעמוד זה. לא מסווגים רוח כיבשתית או ימית בלי כיוון חוף מאומת בנקודת הכניסה.',
@@ -113,7 +113,7 @@
   }
   function render() {
     const root=document.getElementById('sportsDashboard');if(!root)return;
-    const m=state.marine,w=state.weather,sst=state.sst,h=anchor(),times=rows();
+    const m=state.marine,w=state.weather,sst=state.sst,c=state.coastal,h=anchor(),times=rows();
     const get=k=>current(m,k,h),wind=value(w,'wind_speed_10m',h),gust=value(w,'wind_gusts_10m',h);
     const day=w?.daily?.time?.indexOf(h.slice(0,10))??-1;
     const rise=day>=0?w?.daily?.sunrise?.[day]:null,set=day>=0?w?.daily?.sunset?.[day]:null;
@@ -138,8 +138,8 @@
   });
   window.SurfDashboard={
     setLanguage(lang){state.lang=lang==='en'?'en':'he';render();},
-    setUrls(weather,marine,sst){state.urls={weather,marine,sst};},
-    loading(){for(const key of ['weather','marine','sst'])state[key+'Status']=state[key]?'refreshing':'loading';render();},
-    result(which,data){const timed=Array.isArray(data?.hourly?.time)&&data.hourly.time.some(validISO)||validISO(data?.current?.time);const valid=timed&&(which!=='sst'||(data?.hourly_units?.sea_surface_temperature||data?.current_units?.sea_surface_temperature)==='°C');state[which]=valid?data:null;state[which+'Status']=valid?'ready':'error';state[which+'Fetched']=valid?new Date():null;render();}
+    setUrls(weather,marine,sst,coastal){state.urls={weather,marine,sst,coastal};},
+    loading(){for(const key of ['weather','marine','sst','coastal'])state[key+'Status']=state[key]?'refreshing':'loading';render();},
+    result(which,data,reason=''){const timed=Array.isArray(data?.hourly?.time)&&data.hourly.time.some(validISO)||validISO(data?.current?.time);const valid=timed&&(which!=='sst'||(data?.hourly_units?.sea_surface_temperature||data?.current_units?.sea_surface_temperature)==='°C');state[which]=valid?data:null;state[which+'Status']=valid?'ready':'error';state[which+'Fetched']=valid?new Date():null;state.errors[which]=valid?'':(reason||'No valid data returned');render();}
   };
 })();
