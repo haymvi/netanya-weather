@@ -179,7 +179,7 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
 </main>
 <footer><span data-i18n="footerLead">נתונים ומודלים: </span><a href="https://open-meteo.com/" rel="noopener noreferrer" target="_blank">Open-Meteo</a> · <a href="https://www.dwd.de/EN/Home/home_node.html" rel="noopener noreferrer" target="_blank">DWD</a> · <a href="https://open-meteo.com/en/docs/marine-weather-api" rel="noopener noreferrer" target="_blank">Marine API</a> · <span data-i18n="footerTail">נתניה (32.3215°N, 34.8532°E) · עדכון אוטומטי בכל 15 דקות. הנתונים הם תחזיות מודל, ולא מדידות מתחנה מקומית.</span><br/><a class="how-link" id="howLink" href="howto.html?lang=he" data-i18n="howMade">איך זה נוצר</a></footer>
 </div>
-<script src="sports.js?v=20261016-surf3"></script>
+<script src="sports.js?v=20261016-sstfix4"></script>
 <script>(() => {
   'use strict';
   const LAT = 32.3215, LON = 34.8532, TZ = 'Asia/Jerusalem';
@@ -260,11 +260,36 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
       cell_selection:'sea',forecast_days:'7'});
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
   }
-  function sstUrl() {
-    const p=new URLSearchParams({latitude:SEA_LAT,longitude:SEA_LON,timezone:TZ,
+  // Request SST independently. The older "meteofrance_currents" model contains currents,
+  // not SST. The dedicated Météo-France SST product is tried first and Best Match second.
+  // A third attempt tries a different offshore grid near Hadera, still MODEL data.
+  function sstUrl(model='meteofrance_sea_surface_temperature',lat=SEA_LAT,lon=SEA_LON) {
+    const p=new URLSearchParams({latitude:lat,longitude:lon,timezone:TZ,
       current:'sea_surface_temperature',hourly:'sea_surface_temperature',
-      cell_selection:'sea',forecast_days:'7'});
+      cell_selection:'sea',forecast_days:'3',past_days:'1'});
+    if(model)p.set('models',model);
     return 'https://marine-api.open-meteo.com/v1/marine?'+p;
+  }
+  function hasSstValue(data){
+    const isTemp=v=>typeof v==='number'&&Number.isFinite(v)&&v>=-2&&v<=45;
+    return isTemp(data?.current?.sea_surface_temperature) ||
+      (Array.isArray(data?.hourly?.sea_surface_temperature)&&data.hourly.sea_surface_temperature.some(isTemp));
+  }
+  async function fetchSstWithFallback(){
+    const attempts=[
+      {url:sstUrl(),label:'meteofrance_sea_surface_temperature'},
+      {url:sstUrl(''),label:'Open-Meteo Best Match · Netanya offshore'},
+      {url:sstUrl('',32.43,34.80),label:'Open-Meteo Best Match · near Hadera offshore'}
+    ];
+    const errors=[];
+    for(const attempt of attempts){
+      try {
+        const data=await fetchJson(attempt.url);
+        if(hasSstValue(data))return {data,url:attempt.url,label:attempt.label,error:''};
+        errors.push(attempt.label+': no numeric sea_surface_temperature values');
+      }catch(err){errors.push(attempt.label+': '+(err?.message||String(err)));}
+    }
+    return {data:null,url:attempts[0].url,label:'',error:errors.join(' | ')};
   }
   function coastalUrl() {
     const p=new URLSearchParams({latitude:SEA_LAT,longitude:SEA_LON,timezone:TZ,
@@ -328,13 +353,16 @@ html[dir='rtl'] .big-temp { direction:ltr; unicode-bidi:isolate; }
     window.SurfDashboard?.setUrls(weatherUrl(),seaUrl(),sstUrl(),coastalUrl());
     window.SurfDashboard?.loading();
     $('errorBox').classList.remove('show');lastErrorKey=null;
-    const [weather,marine,sst,coastal]=await Promise.allSettled([fetchJson(weatherUrl()),fetchJson(seaUrl()),fetchJson(sstUrl()),fetchJson(coastalUrl())]);
+    const [weather,marine,sst,coastal]=await Promise.allSettled([fetchJson(weatherUrl()),fetchJson(seaUrl()),fetchSstWithFallback(),fetchJson(coastalUrl())]);
     if(weather.status==='fulfilled'){
       try { renderWeather(weather.value); setStatus('statusUpdated'); window.SurfDashboard?.result('weather',weather.value); }
       catch(e) { showError('parseFailed',e.message); window.SurfDashboard?.result('weather',null); }
     } else { showError('apiFailed',weather.reason?.message||''); window.SurfDashboard?.result('weather',null); }
     window.SurfDashboard?.result('marine',marine.status==='fulfilled'?marine.value:null,marine.status==='rejected'?(marine.reason?.message||'Network error'):'');
-    window.SurfDashboard?.result('sst',sst.status==='fulfilled'?sst.value:null,sst.status==='rejected'?(sst.reason?.message||'Network error'):'');
+    const chosenSst=sst.status==='fulfilled'?sst.value:null;
+    window.SurfDashboard?.setUrls(weatherUrl(),seaUrl(),chosenSst?.url||sstUrl(),coastalUrl());
+    window.SurfDashboard?.setSstProvenance?.(chosenSst?.label||'');
+    window.SurfDashboard?.result('sst',chosenSst?.data||null,chosenSst?.error||(sst.status==='rejected'?sst.reason?.message||'Network error':'No SST forecast available'));
     window.SurfDashboard?.result('coastal',coastal.status==='fulfilled'?coastal.value:null,coastal.status==='rejected'?(coastal.reason?.message||'Network error'):'');
     renderMarine(); $('refreshBtn').disabled=false;loading=false;
   }
