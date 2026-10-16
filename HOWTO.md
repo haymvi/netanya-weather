@@ -59,7 +59,7 @@ surf, altura de quebra inventada, classificação onshore/offshore sem orientaç
 local ou garantia de segurança. Vento e mar podem falhar independentemente;
 os campos esportivos do serviço com falha são limpos.
 
-Uma validação local em Chromium recebeu HTTP 200 das duas APIs e exibiu dados
+Uma validação local em Chromium recebeu HTTP 200 dos serviços meteorológico e marítimo e exibiu dados
 reais, sem exceções JavaScript. O [relatório](verification/surf-live.json) guarda
 as URLs e o horário daquele ensaio; não é usado como cache pela aplicação.
 Isso não comprova implantação nem disponibilidade futura do GitHub Pages.
@@ -182,3 +182,12 @@ ChatGPT e Codex (OpenAI), com direção e testes físicos pelo usuário. GitHub 
 (hospedagem), Open-Meteo (previsões), Flashforge (perfis), OrcaSlicer (fatiamento),
 ZXing-C++ (decodificação) e Shapely (geometria do teste reduzido). Esses créditos
 não representam homologação do arquivo pelo fabricante da impressora.
+
+### Precisão da temperatura e unidades de velocidade
+
+A temperatura da água é uma estimativa Météo-France, solicitada separadamente e
+explicitamente identificada, não uma medição em praia de Netanya. A fonte [S]
+mostra a célula, distância, hora e dados brutos; não houve confirmação local
+independente. O fato de a API retornar 27,5 °C não comprova um termômetro na praia.
+Todas as velocidades exibem nós e km/h, inclusive rajadas e painel geral.
+Veja a auditoria em docs/SURF-SOURCES.md e o relatório atualizado de três consultas.

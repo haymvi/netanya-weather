@@ -34,9 +34,9 @@ de rodada específicos: esses identificadores não estão nas respostas usadas.
 | Altura/direção/período de swell | swell_wave_height/direction/period | componente separado |
 | Período de pico do swell | swell_wave_peak_period | s; ausente não vira período médio |
 | Mar de vento | wind_wave_height/direction/period/peak_period | componente separado |
-| Temperatura superficial da água | sea_surface_temperature | °C |
-| Vento a 10 m | weather.hourly.wind_speed_10m | nós e km/h |
-| Rajadas a 10 m | wind_gusts_10m | máximo da hora precedente, nós |
+| Temperatura superficial da água | sea_surface_temperature, consulta separada models=meteofrance_currents | °C; estimativa de modelo, não medição local |
+| Vento a 10 m | weather.hourly.wind_speed_10m | nós e km/h em todas as exibições |
+| Rajadas a 10 m | wind_gusts_10m | máximo da hora precedente, nós e km/h em todas as exibições |
 | Direção do vento | wind_direction_10m | de onde vem, graus + rosa dos ventos |
 | Temperatura do ar | temperature_2m | °C |
 | UV | uv_index | índice horário, sem unidade |
@@ -115,3 +115,37 @@ permanente que deva ser copiada para a interface.
 
 Nenhuma dessas verificações comprova segurança para entrar no mar ou que a onda
 quebra com a altura indicada em um determinado banco de areia.
+
+## Revisão após contestação da temperatura pelo usuário
+
+Foram repetidas as consultas para a referência de Netanya. A consulta automática
+retornou 27,5 °C em (32.291664,34.79167), a aproximadamente 6,7 km da referência.
+Uma consulta separada, explicitamente `models=meteofrance_currents`, também
+retornou 27,5 °C, em (32.375,34.875015), a aproximadamente 6,3 km. Não são duas
+medições independentes; não se tratou a repetição como validação da temperatura
+real de uma praia de Netanya. Uma série constante durante o dia não constitui
+24 observações locais diferentes.
+
+A tela agora usa somente a consulta com modelo explicitamente selecionado para
+a temperatura da água. Verifica unidades °C, separa o status desse serviço dos
+outros dois e não reutiliza a temperatura da resposta automática se ele falhar.
+O cartão diz “modelo, não medição”, e informa ausência de medição local integrada.
+A fonte [S] fornece provedor, coordenadas, distância, validade, obtenção e URL
+exata. A coluna horária também identifica a água como valor de modelo.
+
+Foi tentada verificação independente no NOAA CoastWatch/MUR SST e no serviço
+israelense, mas esses acessos retornaram HTTP 403 neste ambiente. Nenhum valor
+dessas fontes foi obtido, integrado ou inventado. Portanto, a temperatura física
+na praia permanece sem confirmação independente. Não se substituiu o número por
+outro considerado intuitivamente mais plausível.
+
+Vento e rajadas passaram a exibir nós E km/h em todos os cartões, na tabela
+horária e no painel de clima geral. A tabela tem colunas separadas para vento e
+rajadas, com ambas as unidades em cada célula. As conversões são feitas antes
+do arredondamento de apresentação. Consultas continuam a cada 15 minutos, com
+atualização ao retornar de uma aba oculta após esse intervalo; isso não implica
+nova medição nem nova rodada de modelo.
+
+Os testes cobrem falha isolada do serviço SST e rejeição de unidades inesperadas,
+além das verificações anteriores. As três requisições reais responderam HTTP 200
+no Chromium; o relatório atualizado está em ../verification/surf-live.json.
