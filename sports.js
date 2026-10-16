@@ -61,6 +61,26 @@
       sample: 'נתונים שעתיים; לא תצפיות בזמן אמת', sourceLink: 'מקור', snapshot: 'זמני תחזית הים ומזג האוויר מוצגים בנפרד בהמשך. ערכים מותאמים רק לאותה שעת תחזית מקומית.',
     }
   };
+  Object.assign(copy.en,{
+    secondSwell:'Secondary swell',secondSwellNote:'Some models do not return secondary swell. Missing does not mean zero.',
+    coast:'Ocean current (model)',coastDir:'Ocean current flows towards',seaLevel:'Sea level above mean sea level (model)',
+    coastWarning:'Offshore ocean-model currents are NOT rip-current measurements. Sea-level model output is NOT a local tide table.',
+    offshore:'Marine point: 32.3300°N, 34.8000°E (offshore); meteorological point: Netanya (city). Returned grid cells may differ.',
+    sevenDays:'Seven-day offshore wave outlook',dayLabel:'Day',maxCombined:'Max combined waves',maxSwell:'Max swell',maxWindSea:'Max wind waves',maxPeriod:'Max period',noDaily:'Daily marine data unavailable.',
+    officialChecks:'Israeli official forecasts and observations',officialNote:'Independent links only. IMS alerts and Hadera measurements are NOT automatically collected by this page.',
+    imsCoast:'IMS coastal forecast (sea temperature, waves, wind)',imsAlerts:'IMS marine alerts',isramarHadera:'ISRAMAR Hadera station',isramarWave:'ISRAMAR wave forecast',
+    seaSourceCoastal:'Marine currents / sea level',sourceCoastal:'Open-Meteo ocean-model output. Not local rip-current data or a navigation-quality tide prediction.',errorDetail:'API error'
+  });
+  Object.assign(copy.he,{
+    secondSwell:'סוואל משני',secondSwellNote:'בחלק מהמודלים אין סוואל משני. חוסר בנתון אינו אפס.',
+    coast:'זרם ימי (מודל)',coastDir:'כיוון זרימת הזרם',seaLevel:'מפלס ים ביחס לממוצע (מודל)',
+    coastWarning:'זרמי מודל בים אינם מדידה של זרמי סחף בחוף. גובה המים במודל אינו טבלת גאות ושפל מקומית.',
+    offshore:'נקודת הים: 32.3300° צפון, 34.8000° מזרח (בים). נתוני מזג האוויר: נתניה. נקודת רשת המודל עשויה להשתנות.',
+    sevenDays:'תחזית גלים בים ל־7 ימים',dayLabel:'יום',maxCombined:'גובה גלים מרבי',maxSwell:'סוואל מרבי',maxWindSea:'גלי רוח מרביים',maxPeriod:'מחזור מרבי',noDaily:'אין נתונים יומיים לים.',
+    officialChecks:'תחזיות ותצפיות רשמיות בישראל',officialNote:'קישורים להשוואה בלבד. אזהרות IMS ומדידות חדרה אינן נאספות אוטומטית באתר.',
+    imsCoast:'תחזית חופי IMS (מים, גלים, רוח)',imsAlerts:'אזהרות ים IMS',isramarHadera:'תחנת חדרה ISRAMAR',isramarWave:'תחזית גלים ISRAMAR',
+    seaSourceCoastal:'זרמי ים ומפלס ים',sourceCoastal:'מודל אוקייני Open-Meteo. לא מדידת זרמי סחף ולא תחזית גאות לשיט.',errorDetail:'שגיאת API'
+  });
   const t = k => copy[state.lang][k] || k;
   const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const finite = v => typeof v === 'number' && Number.isFinite(v);
@@ -106,10 +126,10 @@
     return `<svg class="surf-chart" role="img" aria-label="${escape(t('trendNote'))}" viewBox="0 0 ${W} ${H}">${grid}${paths}${labels}</svg>`;
   }
   function sourceCard(which,id) {
-    const data=state[which], isMarine=which!=='weather', isSst=which==='sst';
+    const data=state[which], isMarine=which!=='weather', isSst=which==='sst', isCoastal=which==='coastal';
     const point=finite(data?.latitude)&&finite(data?.longitude)?`${num(data.latitude,4)}° N, ${num(data.longitude,4)}° E`:'—';
     const validHour=index(data,anchor())>=0?anchor()+':00':data?.current?.time;
-    return `<article class="surf-source-card" id="source-${id}"><h3>${escape(t(isSst?'sstSource':isMarine?'seaSource':'weatherSource'))} [${id.toUpperCase()}]</h3><p>${escape(t(isSst?'sourceSst':isMarine?'sourceModel':'sourceWeather'))}</p><dl><div><dt>${escape(t('selected'))}</dt><dd dir="ltr">${escape(point)}</dd></div><div><dt>${escape(t('distance'))}</dt><dd dir="ltr">${num(distance(data))} km</dd></div><div><dt>${escape(t('valid'))}</dt><dd dir="ltr">${escape(stamp(validHour))}</dd></div><div><dt>${escape(t('fetched'))}</dt><dd dir="ltr">${escape(fetched(state[which+'Fetched']))}</dd></div></dl><p><a href="${isMarine?'https://open-meteo.com/en/docs/marine-weather-api':'https://open-meteo.com/en/docs'}" target="_blank" rel="noopener noreferrer">${escape(t('docs'))}</a>${state.urls[which]?` · <a href="${escape(state.urls[which])}" target="_blank" rel="noopener noreferrer">${escape(t('raw'))}</a>`:''}</p></article>`;
+    return `<article class="surf-source-card" id="source-${id}"><h3>${escape(t(isCoastal?'seaSourceCoastal':isSst?'sstSource':isMarine?'seaSource':'weatherSource'))} [${id.toUpperCase()}]</h3><p>${escape(t(isCoastal?'sourceCoastal':isSst?'sourceSst':isMarine?'sourceModel':'sourceWeather'))}</p><dl><div><dt>${escape(t('selected'))}</dt><dd dir="ltr">${escape(point)}</dd></div><div><dt>${escape(t('distance'))}</dt><dd dir="ltr">${num(distance(data))} km</dd></div><div><dt>${escape(t('valid'))}</dt><dd dir="ltr">${escape(stamp(validHour))}</dd></div><div><dt>${escape(t('fetched'))}</dt><dd dir="ltr">${escape(fetched(state[which+'Fetched']))}</dd></div></dl><p><a href="${isMarine?'https://open-meteo.com/en/docs/marine-weather-api':'https://open-meteo.com/en/docs'}" target="_blank" rel="noopener noreferrer">${escape(t('docs'))}</a>${state.urls[which]?` · <a href="${escape(state.urls[which])}" target="_blank" rel="noopener noreferrer">${escape(t('raw'))}</a>`:''}</p>${state.errors[which]?`<p>${escape(t('errorDetail'))}: ${escape(state.errors[which])}</p>`:''}</article>`;
   }
   function render() {
     const root=document.getElementById('sportsDashboard');if(!root)return;
@@ -118,7 +138,7 @@
     const day=w?.daily?.time?.indexOf(h.slice(0,10))??-1;
     const rise=day>=0?w?.daily?.sunrise?.[day]:null,set=day>=0?w?.daily?.sunset?.[day]:null;
     const sun=v=>validISO(v)?v.slice(11,16):'—';
-    const components=[['waves','wave'],['swell','swell_wave'],['windSea','wind_wave']].map(([label,key])=>`<tr><th scope="row">${escape(t(label))}</th><td dir="ltr">${num(get(key+'_height'))} m</td><td dir="ltr">${escape(direction(get(key+'_direction')))}</td><td dir="ltr">${num(get(key+'_period'))} s</td><td dir="ltr">${num(get(key+'_peak_period'))} s</td></tr>`).join('');
+    const components=[['waves','wave'],['swell','swell_wave'],['windSea','wind_wave'],['secondSwell','secondary_swell_wave']].map(([label,key])=>`<tr><th scope="row">${escape(t(label))}</th><td dir="ltr">${num(get(key+'_height'))} m</td><td dir="ltr">${escape(direction(get(key+'_direction')))}</td><td dir="ltr">${num(get(key+'_period'))} s</td><td dir="ltr">${num(get(key+'_peak_period'))} s</td></tr>`).join('');
     const table=times.map(time=>{const hour=time.slice(0,13),v=(d,k)=>value(d,k,hour);return `<tr><th scope="row" dir="ltr">${escape(stamp(time))}</th><td dir="ltr">${num(v(m,'wave_height'))} / ${num(v(m,'wave_period'))} / ${escape(direction(v(m,'wave_direction')))}</td><td dir="ltr">${num(v(m,'swell_wave_height'))} / ${num(v(m,'swell_wave_peak_period'))}</td><td dir="ltr">${escape(speed(v(w,'wind_speed_10m')))}</td><td dir="ltr">${escape(speed(v(w,'wind_gusts_10m')))}</td><td dir="ltr">${escape(direction(v(w,'wind_direction_10m')))}</td><td dir="ltr">${num(v(sst,'sea_surface_temperature'))} / ${num(v(w,'temperature_2m'))}</td><td dir="ltr">${num(v(w,'uv_index'))} / ${num(v(w,'precipitation_probability'),0)}%</td></tr>`;}).join('');
     root.innerHTML=`<div class="surf-hero"><div class="surf-kicker">${escape(t('model'))}</div><h1>${escape(t('title'))}</h1><p>${escape(t('sub'))}</p><div class="surf-sport-tabs" role="group" aria-label="${escape(t('title'))}">${['surf','windsurf','kite'].map(s=>`<button type="button" data-sport="${s}" aria-pressed="${state.sport===s}">${escape(t(s))}</button>`).join('')}</div><div class="surf-service-status" aria-live="polite"><span>${escape(t('seaSource'))}: ${escape(status('marine'))}</span><span>${escape(t('weatherSource'))}: ${escape(status('weather'))}</span><span>${escape(t('sstSource'))}: ${escape(status('sst'))}</span></div><p class="surf-time">${escape(t('hour'))}: <b dir="ltr">${escape(stamp(h+':00'))}</b> · ${escape(t('local'))}</p><div class="surf-metrics">${metric('surfHs','seaState',num(get('wave_height'))+' m',t('sample'))}${metric('surfPeriod','period',num(get('wave_period'))+' s',t('mean'))}${metric('surfDirection','direction',direction(get('wave_direction')),'')}${metric('surfSwell','swell',num(get('swell_wave_height'))+' m','')}${metric('surfPeak','swellPeak',num(get('swell_wave_peak_period'))+' s',t('peak'))}${metric('surfWind','wind',speed(wind),`${t('from')} ${direction(value(w,'wind_direction_10m',h))}`,'w')}${metric('surfGust','gust',speed(gust),'', 'w')}${metric('surfWater','water',num(current(sst,'sea_surface_temperature',h))+' °C',t('modelSst'),'s')}</div><p class="surf-guide">${cited(t(state.sport+'Guide'))} <a href="#surfSources">${escape(t('sources'))}</a></p><p class="surf-caveat">${cited(t('waveNote'))}</p><div class="surf-chart-head"><h2>${escape(t('trend'))}</h2><span>○ ${escape(t('combinedLegend'))} · <span class="swell-legend">○ ${escape(t('swellLegend'))}</span></span></div>${chart(times)}</div>
       <section class="surf-section"><h2>${escape(t('components'))} ${source('m')}</h2><div class="surf-table-wrap" role="region" aria-label="${escape(t('components'))}" tabindex="0"><table class="surf-table"><thead><tr>${['component','height','direction','mean','peak'].map(k=>`<th scope="col">${escape(t(k))}</th>`).join('')}</tr></thead><tbody>${components}</tbody></table></div><p class="surf-footnote">${cited(t('notAdd'))}</p></section>
